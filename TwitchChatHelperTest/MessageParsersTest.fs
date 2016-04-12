@@ -139,3 +139,25 @@ let``test message parse JOIN message``()=
         m.Channel |> should equal msgJoin_Channel
     | _ -> 
         true |> should equal false
+
+let msg_endNames = ":twitch_username.tmi.twitch.tv 366 twitch_username #channel :End of /NAMES list"
+
+let msgendNames_nameaddr = "twitch_username.tmi.twitch.tv"
+let msgendNames_code = "366"
+let msgendNames_nickname = "twitch_username"
+let msgendNames_Channel = "#channel"
+let msgendNames_message = "End of /NAMES list"
+
+[<Test>]
+let``test message parse End of Names``()=
+    let retv_msg = parseMessage msg_endNames
+    
+    match retv_msg with
+    | NicknamesEnd m -> 
+        m.NameAddr |> should equal msgendNames_nameaddr
+        m.Code |> should equal msgendNames_code        
+        m.Nickname |> should equal msgendNames_nickname
+        m.Channel |> should equal msgendNames_Channel
+        m.Message |> should equal msgendNames_message
+    | _ -> 
+        true |> should equal false

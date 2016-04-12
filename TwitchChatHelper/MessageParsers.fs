@@ -20,9 +20,12 @@ let pattern_ping = @"^PING :(?<twitchaddr>[\w\.]+)$"
 /// RegEx. Twitch JOIN message response.
 let pattern_ChanellJoin = @"^:(?<nickname>\w*)!(?<nameaddr>[\w\.@]+)\s+(?<cmd>\w*)\s+(?<channel>#\w*)$"
 
-
 /// Twitch JOIN response with nicknames, code 353.
 let pattern_ChanellNicknames = @"^:(?<nameaddr>[\w\.]+)\s+(?<code>\w*)\s+(?<nickname1>[\w_\.]+)\s+=\s+(?<channel>#\w*)\s+:(?<nickname2>[\w_\.]+)$"
+
+/// Twitch end of nicknames, code 366.
+let pattern_ChanellNicknamesEnd = @"^:(?<nameaddr>[\w\.]+)\s+(?<code>\w*)\s+(?<nickname>[\w_\.]+)\s+(?<channel>#\w*)\s+:(?<message>[\w \/]+)$"
+
 
 ///Match the pattern using a cached compiled Regex
 let (|CompiledMatch|_|) pattern input =
@@ -74,6 +77,15 @@ let parseMessage name =
                 Nickname2 = nickname2
             }
         p
+    | CompiledMatch pattern_ChanellNicknamesEnd [nameaddr; code; nickname; chanell; message] ->
+        let p = NicknamesEnd {
+                NameAddr = nameaddr
+                Code = code
+                Nickname = nickname
+                Channel = chanell
+                Message = message
+            }
+        p
     | _ -> 
         let p = Other name
         p
@@ -87,9 +99,11 @@ let PrintMsg message =
         printfn "Info: %15s | %3s | %s | %s" i.TwitchAddr i.Code i.Nickname i.Message
     | Ping p -> 
         printColored colorPing (sprintf "PING from %s" p.TwitchAddr)
-    | Nicknames p -> 
-        printColored colorInfo (sprintf "Nicknames | %s | %3s | %s | %s | %s" p.TwitchAddr p.Code p.Nickname1 p.Channel p.Nickname2)
     | ChanellJoin p -> 
         printColored colorInfo (sprintf "JOIN | %s | %s | %s | %s" p.Nickname p.NameAddr p.Cmd p.Channel)
+    | Nicknames p -> 
+        printColored colorInfo (sprintf "Nicknames | %s | %3s | %s | %s | %s" p.TwitchAddr p.Code p.Nickname1 p.Channel p.Nickname2)
+    | NicknamesEnd p -> 
+        printColored colorInfo (sprintf "/NAMES | %s | %3s | %s | %s | %s" p.NameAddr p.Code p.Nickname p.Channel p.Message)
     | Other o -> printfn "Oher: %s" o
 
