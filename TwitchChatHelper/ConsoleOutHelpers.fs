@@ -4,6 +4,7 @@ open System
 
 let colorInfo = ConsoleColor.DarkYellow
 let colorPing = ConsoleColor.DarkMagenta
+let colorJoin = ConsoleColor.Cyan
 
 let printColored c (s:string) = 
     let old = System.Console.ForegroundColor 

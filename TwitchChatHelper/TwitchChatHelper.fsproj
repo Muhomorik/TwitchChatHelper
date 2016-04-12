@@ -53,6 +53,7 @@
     <Compile Include="MessageTypes.fs" />
     <Compile Include="MessageParsers.fs" />
     <Compile Include="TwitchCommands.fs" />
+    <Compile Include="MessagePrint.fs" />
     <Compile Include="FileLogger.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />

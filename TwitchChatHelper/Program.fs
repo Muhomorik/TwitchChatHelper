@@ -12,12 +12,14 @@ open ConsoleOutHelpers
 open MessageTypes
 open MessageParsers
 open TwitchCommands
+open MessagePrint
 
 let channelRita = "#ritagamer2"
 let channelSlide = "#p0wersl1de"
 let channelLagyAndel = "#lady__angel"
 let channelMargareth = "#margaret_hilda_thatcher"
 let channelLebwa = "#lebwa_wot"
+let channelQB = "#quickybaby"
 
 // File writer
 
@@ -40,9 +42,9 @@ let main argv =
 
     SendPass oauth
     SendNick nick
-    SendJoin channelLebwa
+    SendJoin channelQB
 
-    use streamWriter = new StreamWriter("twitch_log.txt" )
+    use streamWriter = new StreamWriter("twitch_log_qb.txt", true ) // append
     streamWriter.AutoFlush <- true
     
     while not irc_reader.EndOfStream do
