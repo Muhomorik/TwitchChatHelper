@@ -52,18 +52,10 @@ let main argv =
         
         match msg with
         | Msg m -> 
-            // TODO: msg as type.
-            match m.Cmd with
-            | "PRIVMSG" ->
-                // Log message only.
-                try
-                    streamWriter.WriteLine(m.Message)
-                finally
-                    streamWriter.Flush()
-            | "JOIN" ->
-                printColored colorPing (sprintf "JOIN %s" m.Channel)
-            | _ -> testWrite msgText |> Async.Start  // async to err file (full line), should not be many.
-            
+            try
+                streamWriter.WriteLine(m.Message)
+            finally
+                streamWriter.Flush()     
 
         | Ping p -> SendPong()
         | Other o -> testWrite msgText |> Async.Start  // async to err file (full line), should not be many.

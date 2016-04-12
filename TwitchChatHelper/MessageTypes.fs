@@ -19,9 +19,27 @@ type MessageTwitchInfo = {
 type MessageTwitchPing = {
     TwitchAddr:string}
 
+/// Twitch JOIN response with nicknames, code 353.
+type MessageTwitchChanellNicknames = {
+    TwitchAddr:string
+    Code:string    
+    Nickname1:string 
+    Channel:string
+    Nickname2:string}
+
+/// Twitch JOIN message.
+/// :twitch_username!twitch_username@twitch_username.tmi.twitch.tv JOIN #channel
+type MessageTwitchChanellJoin = {
+    Nickname:string     
+    NameAddr:string
+    Cmd:string
+    Channel:string}
+
 /// Twitch message
 type Message = 
   | Msg of MessageChanell
   | Info of MessageTwitchInfo
   | Ping of MessageTwitchPing
+  | ChanellJoin of MessageTwitchChanellJoin
+  | Nicknames of MessageTwitchChanellNicknames
   | Other of string  // ofr not parsed messages.

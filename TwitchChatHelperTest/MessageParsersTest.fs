@@ -10,6 +10,8 @@ open FsUnit
 open MessageTypes
 open MessageParsers
 
+// ORDER tests, use examles from manual
+
 // Test EN locale.
 let msg_en = ":nickname!nickname@nickname.tmi.twitch.tv PRIVMSG #gamer2 :So is this the stream with giveaways?"
 
@@ -91,5 +93,49 @@ let``test message parse Ping``()=
     match retv_msg with
     | Ping m -> 
         m.TwitchAddr |> should equal msgPing_TwitchAddr
+    | _ -> 
+        true |> should equal false
+
+// Hello messages
+let msg_Nick = ":twitch_username.tmi.twitch.tv 353 twitch_username = #channel :twitch_username"
+
+let msgNick_TwitchAddr = "twitch_username.tmi.twitch.tv"
+let msgNick_Code = "353"
+let msgNick_Nickname = "twitch_username"
+let msgNick_Channel = "#channel"
+let msgNick_Nickname2 = "twitch_username"
+
+[<Test>]
+let``test message parse JOIN nicknames``()=
+    let retv_msg = parseMessage msg_Nick
+    
+    match retv_msg with
+    | Nicknames m -> 
+        m.TwitchAddr |> should equal msgNick_TwitchAddr
+        m.Code |> should equal msgNick_Code
+        m.Nickname1 |> should equal msgNick_Nickname
+        m.Channel |> should equal msgNick_Channel
+        m.Nickname2 |> should equal msgNick_Nickname2
+    | _ -> 
+        true |> should equal false
+
+
+let msg_join = ":twitch_username!twitch_username@twitch_username.tmi.twitch.tv JOIN #channel"
+
+let msgJoin_Nickname = "twitch_username"
+let msgJoin_TwitchAddr = "twitch_username@twitch_username.tmi.twitch.tv"
+let msgJoin_Cmd = "JOIN"
+let msgJoin_Channel = "#channel"
+
+[<Test>]
+let``test message parse JOIN message``()=
+    let retv_msg = parseMessage msg_join
+    
+    match retv_msg with
+    | ChanellJoin m -> 
+        m.Nickname |> should equal msgJoin_Nickname
+        m.NameAddr |> should equal msgJoin_TwitchAddr
+        m.Cmd |> should equal msgJoin_Cmd
+        m.Channel |> should equal msgJoin_Channel
     | _ -> 
         true |> should equal false
