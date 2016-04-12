@@ -17,6 +17,7 @@ let channelRita = "#ritagamer2"
 let channelSlide = "#p0wersl1de"
 let channelLagyAndel = "#lady__angel"
 let channelMargareth = "#margaret_hilda_thatcher"
+let channelLebwa = "#lebwa_wot"
 
 // File writer
 
@@ -26,8 +27,9 @@ let testWrite(line:string) = async {
 }
 //testWrite z |> Async.Start
 
-
+// big chans problem
 // http://stackoverflow.com/questions/36116231/using-writelineasync-in-f
+// https://discuss.dev.twitch.tv/t/irc-client-can-send-but-not-receive/1533
 [<EntryPoint>]
 let main argv = 
     Console.OutputEncoding <- Encoding.Unicode    
@@ -38,15 +40,15 @@ let main argv =
 
     SendPass oauth
     SendNick nick
-    SendJoin channelMargareth
+    SendJoin channelLebwa
 
     use streamWriter = new StreamWriter("twitch_log.txt" )
     streamWriter.AutoFlush <- true
     
-
     while not irc_reader.EndOfStream do
         let msgText = ReceiveMessage()
         
+        //printfn "%s" msgText
         let msg = parseMessage msgText
         PrintMsg msg
         
@@ -61,4 +63,5 @@ let main argv =
         | Other o -> testWrite msgText |> Async.Start  // async to err file (full line), should not be many.
         | _  -> ()
 
+    printfn "Done"
     0 // return an integer exit code

@@ -21,10 +21,10 @@ let pattern_ping = @"^PING :(?<twitchaddr>[\w\.]+)$"
 let pattern_ChanellJoin = @"^:(?<nickname>\w*)!(?<nameaddr>[\w\.@]+)\s+(?<cmd>\w*)\s+(?<channel>#\w*)$"
 
 /// Twitch JOIN response with nicknames, code 353.
-let pattern_ChanellNicknames = @"^:(?<nameaddr>[\w\.]+)\s+(?<code>\w*)\s+(?<nickname1>[\w_\.]+)\s+=\s+(?<channel>#\w*)\s+:(?<nickname2>[\w_\.]+)$"
+let pattern_ChanellNicknames = @"^:(?<nameaddr>[\w\.]+)\s+(?<code>\w*)\s+(?<nickname1>[\w_\._]+)\s+=\s+(?<channel>#\w*)\s+:(?<nickname2>[\w_\.]+)$"
 
 /// Twitch end of nicknames, code 366.
-let pattern_ChanellNicknamesEnd = @"^:(?<nameaddr>[\w\.]+)\s+(?<code>\w*)\s+(?<nickname>[\w_\.]+)\s+(?<channel>#\w*)\s+:(?<message>[\w \/]+)$"
+let pattern_ChanellNicknamesEnd = @"^:(?<nameaddr>[\w\.]+)\s+(?<code>\w*)\s+(?<nickname>[\w_\._]+)\s+(?<channel>#\w*)\s+:(?<message>[\w \/]+)$"
 
 
 ///Match the pattern using a cached compiled Regex

@@ -9,7 +9,8 @@ open System.Net.Sockets
 open ConsoleOutHelpers
 
 /// Twitch server
-let server = "irc.twitch.tv"
+//let server = "irc.twitch.tv"
+let server = "irc.chat.twitch.tv"
 
 /// Twitch port
 let port  = 6667
@@ -20,13 +21,13 @@ irc_client.Connect( server, port )
     
 // get the input and output streams
 let irc_reader = new StreamReader( irc_client.GetStream() )
+//irc_reader.BaseStream.ReadTimeout <- 2000
 
 // writer
 let irc_writer = new StreamWriter( irc_client.GetStream() )
 irc_writer.AutoFlush <- true
 
 let ReceiveMessage() = 
-    //use irc_reader = new StreamReader( irc_client.GetStream() )
     let msg = irc_reader.ReadLine()
     msg
 
@@ -39,6 +40,9 @@ let SendNick(nick:string) =
     printColored colorInfo "Send NICK"
 
 let SendJoin(channel:string) =
+    
+    if(not (channel.StartsWith("#"))) then invalidArg "channel" "Channel name must start with #"
+
     irc_writer.WriteLine( sprintf "JOIN %s\n" channel )
     printColored colorInfo (sprintf "JOIN %s\n" channel)
 
