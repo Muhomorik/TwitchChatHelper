@@ -24,11 +24,23 @@ Chat
 ##  Config ##
 
 * Is storedMyCfg.fs so far. Username and oauth.
-* Channel hard-coded.
-* Output filename is in Main().
+
+Command line args:
+
+* --channel #channel
+* --filelog twitch_log.txt
+
+If channel is missing console is going to ask for input.
+
+If fil is missing, the default is going to be used.
+
+## Uses ##
+
+- Argu. A declarative CLI argument/XML configuration parser for F#
+    * [GitHub](https://github.com/fsprojects/Argu) [Tutorial](http://fsprojects.github.io/Argu/tutorial.html)
 
 ## TODO ##
 
-- [ ] Command line: channel, 
+- [x] Command line: channel, 
 - [ ] Config: nickname, oauth login to settings file (or smth)
-- [ ] Output filename as cli parameter.
+- [x] Output filename as cli parameter.

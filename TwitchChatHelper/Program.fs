@@ -7,22 +7,17 @@ open System.Net
 open System.Net.Sockets
 open System.Text.RegularExpressions
 
+//open Argu
+
 open MyCfg
 open ConsoleOutHelpers
 open MessageTypes
 open MessageParsers
 open TwitchCommands
 open MessagePrint
-
-let channelRita = "#ritagamer2"
-let channelSlide = "#p0wersl1de"
-let channelLagyAndel = "#lady__angel"
-let channelMargareth = "#margaret_hilda_thatcher"
-let channelLebwa = "#lebwa_wot"
-let channelQB = "#quickybaby"
+open CliArguments
 
 // File writer
-
 let testWrite(line:string) = async {
     use sw = new StreamWriter(new FileStream("twitch_log_other.txt",  FileMode.Append, FileAccess.Write, FileShare.Write, bufferSize= 4096, useAsync= true))
     do! sw.WriteLineAsync(line) |>  Async.AwaitTask
@@ -37,14 +32,24 @@ let main argv =
     Console.OutputEncoding <- Encoding.Unicode    
     printf "%s \n" "Работаю!"  // Must print nice, or utf not set properly! "Working" iin russian.
 
+    // Check login details and quit with error if missing.
     if (String.IsNullOrWhiteSpace(nick)) then printfn "Nickname is empty"; exit 5
     if (String.IsNullOrWhiteSpace(oauth)) then printfn "Oauth is empty"; exit 5
 
+    /// Parsed CLI paramss input.
+    let results = parser.Parse(argv)
+    /// Log file
+    let logFile = parseFileLog(results)
+    /// Channel from cli or console.
+    let channel = results   |> parseChannel
+                            |> ReadChannelFromConsole 
+
+    // Login and join channel.
     SendPass oauth
     SendNick nick
-    SendJoin channelQB
+    SendJoin channel
 
-    use streamWriter = new StreamWriter("twitch_log_qb.txt", true ) // append
+    use streamWriter = new StreamWriter(logFile, true ) // append
     streamWriter.AutoFlush <- true
     
     while not irc_reader.EndOfStream do
