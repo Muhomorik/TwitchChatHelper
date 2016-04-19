@@ -93,6 +93,12 @@ let SendPong(conn:TcpClient) =
     let irc_writer = IrcWriterAsync conn |> Async.RunSynchronously
     irc_writer.WriteLine( "PONG :tmi.twitch.tv" )
 
+/// Send PONG async.
+let SendPongAsync(conn:TcpClient) = async{
+    let! ircWriter = IrcWriterAsync conn
+    ircWriter.WriteLine( "PONG :tmi.twitch.tv" )
+}
+
 /// Loging and join given channel.
 let LoginAndJoinAsync (oauth:string)(nick:string)(channel:string) (conn:TcpClient) = async{
     do! SendPassAsync oauth conn
