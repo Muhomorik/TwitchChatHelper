@@ -25,14 +25,14 @@ Chat
 
 * Is storedMyCfg.fs so far. Username and oauth.
 
-Command line args:
+## Command line args: ##
 
 * --channel #channel
 * --filelog twitch_log.txt
 
 If channel is missing console is going to ask for input.
 
-If fil is missing, the default is going to be used.
+If the file is missing, the default one is going to be used.
 
 ## Uses ##
 
@@ -41,6 +41,5 @@ If fil is missing, the default is going to be used.
 
 ## TODO ##
 
-- [x] Command line: channel, 
 - [ ] Config: nickname, oauth login to settings file (or smth)
-- [x] Output filename as cli parameter.
+- [ ] Floating window message/pm counter, avoid bans.

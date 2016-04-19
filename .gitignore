@@ -3,6 +3,7 @@
 
 # User files
 MyCfg.fs
+myLogs/*.txt
 
 # User-specific files
 *.suo
