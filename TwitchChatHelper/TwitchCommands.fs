@@ -27,9 +27,19 @@ let irc_reader = new StreamReader( irc_client.GetStream() )
 let irc_writer = new StreamWriter( irc_client.GetStream() )
 irc_writer.AutoFlush <- true
 
+let mutable reconnects = 0
+
 let ReceiveMessage() = 
-    let msg = irc_reader.ReadLine()
-    msg
+    try
+        let msg = irc_reader.ReadLine()
+        msg
+    with
+    | :? IOException as ex ->
+        printfn "Connection error, exit"
+        exit 5
+    | _ ->
+        // don't handle any other cases 
+        reraise() 
 
 let SendPass(oauth:string) =
     irc_writer.WriteLine( sprintf "PASS %s" oauth)
@@ -48,4 +58,4 @@ let SendJoin(channel:string) =
 
 let SendPong() =
     irc_writer.WriteLine( "PONG :tmi.twitch.tv" )
-    printColored colorPing ("PONG")
+    //printColored colorPing ("PONG")
