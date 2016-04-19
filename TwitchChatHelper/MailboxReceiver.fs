@@ -1,12 +1,5 @@
 ﻿module MailboxReceiver
 
-open System
-open System.IO
-open System.Text
-open System.Net
-open System.Net.Sockets
-open System.Text.RegularExpressions
-
 open MessageTypes
 open ConsoleOutHelpers
 open MessagePrint
