@@ -25,7 +25,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Debug\TwitchChatHelper.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
-    <StartArguments>--filelog twitch_msg_log.txt</StartArguments>
+    <StartArguments>--filelog twitch_msg_log.txt --channel #margaret_hilda_thatcher"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -64,6 +64,7 @@
     <Compile Include="MessagePrint.fs" />
     <Compile Include="FileLogger.fs" />
     <Compile Include="CliArguments.fs" />
+    <Compile Include="MailboxReceiver.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />

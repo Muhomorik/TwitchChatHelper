@@ -55,10 +55,10 @@ let main argv =
     while not irc_reader.EndOfStream do
         let msgText = ReceiveMessage()
         
-        //printfn "%s" msgText
         let msg = parseMessage msgText
-        PrintMsg msg
-        
+        //PrintMsg msg
+        MailboxReceiver.MailboxReceiver.PostMessage(msg)
+
         match msg with
         | Msg m -> 
             try
@@ -66,7 +66,9 @@ let main argv =
             finally
                 streamWriter.Flush()     
 
-        | Ping p -> SendPong()
+        | Ping p -> 
+            SendPong()
+            MailboxReceiver.MailboxReceiver.PostPong()
         | Other o -> testWrite msgText |> Async.Start  // async to err file (full line), should not be many.
         | _  -> ()
 
