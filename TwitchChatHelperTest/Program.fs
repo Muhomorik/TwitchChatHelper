@@ -5,7 +5,7 @@ open System.IO
 open System.Text.RegularExpressions
 
 open NUnit.Framework
-open FsUni
+open FsUnit
 
 [<EntryPoint>]
 let main argv = 

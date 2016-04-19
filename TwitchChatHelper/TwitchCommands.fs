@@ -15,47 +15,87 @@ let server = "irc.chat.twitch.tv"
 /// Twitch port
 let port  = 6667
 
-// establish a connection to the server
-let irc_client = new TcpClient();
-irc_client.Connect( server, port )    
+/// Get current TcpClient and reconnect if connection is lost.
+let IrcConnectAsync (conn:TcpClient) = async{
+    match conn.Connected with
+    | true -> 
+        return conn
+    | false ->
+        printfn "RECONNECT"
+        conn.Connect(server, port)
+        return conn
+}
+   
+/// Get StreamReader for TcpClient. 
+let IrcReaderAsync (client: TcpClient) = async {
+    let! conn = IrcConnectAsync client
+    let sr = new StreamReader( conn.GetStream() )
+    return sr 
+}
+
+/// Get StreamWriter for TcpClient. 
+let IrcWriterAsync (client: TcpClient) = async {
+    let! conn = IrcConnectAsync client
+    let irc_writer = new StreamWriter( conn.GetStream() )
+    irc_writer.AutoFlush <- true
+    return irc_writer 
+}
+
+/// Receive message async.
+let ReceiveMessageAsync (conn:TcpClient) = async{
+    let! cli = IrcReaderAsync conn
+    let msg2 = cli.ReadLineAsync() |> Async.AwaitTask
+
+    return! msg2
+}
+
+/// Send Pass
+let SendPass(oauth:string)(conn:TcpClient) =    
+    let irc_writer = IrcWriterAsync conn |> Async.RunSynchronously
     
-// get the input and output streams
-let irc_reader = new StreamReader( irc_client.GetStream() )
-//irc_reader.BaseStream.ReadTimeout <- 2000
-
-// writer
-let irc_writer = new StreamWriter( irc_client.GetStream() )
-irc_writer.AutoFlush <- true
-
-let mutable reconnects = 0
-
-let ReceiveMessage() = 
-    try
-        let msg = irc_reader.ReadLine()
-        msg
-    with
-    | :? IOException as ex ->
-        printfn "Connection error, exit"
-        exit 5
-    | _ ->
-        // don't handle any other cases 
-        reraise() 
-
-let SendPass(oauth:string) =
     irc_writer.WriteLine( sprintf "PASS %s" oauth)
     printColored colorInfo "Send PASS"
 
-let SendNick(nick:string) =
+/// Send password asyns.
+let SendPassAsync(oauth:string)(conn:TcpClient) = async{
+    return SendPass oauth conn
+}
+
+/// Send Nickname
+let SendNick(nick:string)(conn:TcpClient) =
+    let irc_writer = IrcWriterAsync conn |> Async.RunSynchronously
+    
     irc_writer.WriteLine( sprintf "NICK %s" nick )
     printColored colorInfo "Send NICK"
 
-let SendJoin(channel:string) =
+// Send Nickname Async.
+let SendNickAsync(nick:string)(conn:TcpClient) = async{
+    return SendNick nick conn
+}
+
+/// Send JOIN.
+let SendJoin(channel:string)(conn:TcpClient) =
     
     if(not (channel.StartsWith("#"))) then invalidArg "channel" "Channel name must start with #"
+
+    let irc_writer = IrcWriterAsync conn |> Async.RunSynchronously
 
     irc_writer.WriteLine( sprintf "JOIN %s\n" channel )
     printColored colorInfo (sprintf "JOIN %s\n" channel)
 
-let SendPong() =
+/// Send JOIN async.
+let SendJoinAsync(channel:string)(conn:TcpClient) = async{
+    return SendJoin channel conn
+}
+
+/// Send PONG.
+let SendPong(conn:TcpClient) =
+    let irc_writer = IrcWriterAsync conn |> Async.RunSynchronously
     irc_writer.WriteLine( "PONG :tmi.twitch.tv" )
-    //printColored colorPing ("PONG")
+
+/// Loging and join given channel.
+let LoginAndJoinAsync (oauth:string)(nick:string)(channel:string) (conn:TcpClient) = async{
+    do! SendPassAsync oauth conn
+    do! SendNickAsync nick conn
+    do! SendJoinAsync channel conn
+}
