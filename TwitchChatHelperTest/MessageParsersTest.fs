@@ -1,4 +1,4 @@
-﻿module MessageRecvParsersTest
+﻿module MessageParsersTest
 
 open System
 open System.IO
