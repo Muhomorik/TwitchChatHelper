@@ -30,10 +30,10 @@ let ProcessMessageAsync (fileWriter:StreamWriter) (ircClient:TcpClient) = async{
     MailboxReceiver.MailboxReceiver.PostMessage(msg)
 
     match msg with
-    | Msg m -> 
+    | ChanellMessage m -> 
         fileWriter.WriteLine(m.Message)    
 
-    | Ping p -> 
+    | Ping -> 
         do! SendPongAsync ircClient
         MailboxReceiver.MailboxReceiver.PostPong()
     | Other o -> do! testWrite msgText // async to err file (full line), should not be many.

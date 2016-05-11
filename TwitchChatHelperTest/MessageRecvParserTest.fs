@@ -16,35 +16,34 @@ open MessageParsers
 // Upon a Successful Connection
 // 
 
-let succ_con_1 = ":tmi.twitch.tv 001 twitch_username :Welcome, GLHF!"
-let succ_con_2 = ":tmi.twitch.tv 002 twitch_username :Your host is tmi.twitch.tv"
-let succ_con_3 = ":tmi.twitch.tv 003 twitch_username :This server is rather new"
-let succ_con_4 = ":tmi.twitch.tv 004 twitch_username :-"
-let succ_con_5 = ":tmi.twitch.tv 372 twitch_username :You are in a maze of twisty passages, all alike."
-let succ_con_6 = ":tmi.twitch.tv 376 twitch_username :>"
+let msg_succ_con_1 = ":tmi.twitch.tv 001 twitch_username :Welcome, GLHF!"
+let msg_succ_con_2 = ":tmi.twitch.tv 002 twitch_username :Your host is tmi.twitch.tv"
+let msg_succ_con_3 = ":tmi.twitch.tv 003 twitch_username :This server is rather new"
+let msg_succ_con_4 = ":tmi.twitch.tv 004 twitch_username :-"
+let msg_succ_con_5 = ":tmi.twitch.tv 372 twitch_username :You are in a maze of twisty passages, all alike."
+let msg_succ_con_6 = ":tmi.twitch.tv 376 twitch_username :>"
 
 [<TestFixture>]
 type ``Recv: Upon a Successful Connection`` () = 
-    
     static member TestData =
         [|
-            [|succ_con_1, "tmi.twitch.tv" , "001", "twitch_username", "Welcome, GLHF!"|];
-            [|succ_con_2, "tmi.twitch.tv" , "002", "twitch_username", "Your host is tmi.twitch.tv"|];
-            [|succ_con_3, "tmi.twitch.tv" , "003", "twitch_username", "This server is rather new"|];
-            [|succ_con_4, "tmi.twitch.tv" , "004", "twitch_username", "-"|];
-            [|succ_con_5, "tmi.twitch.tv" , "372", "twitch_username", "You are in a maze of twisty passages, all alike."|];
-            [|succ_con_6, "tmi.twitch.tv" , "376", "twitch_username", ">"|];
+            [|msg_succ_con_1, "tmi.twitch.tv" , "001", "twitch_username", "Welcome, GLHF!"|];
+            [|msg_succ_con_2, "tmi.twitch.tv" , "002", "twitch_username", "Your host is tmi.twitch.tv"|];
+            [|msg_succ_con_3, "tmi.twitch.tv" , "003", "twitch_username", "This server is rather new"|];
+            [|msg_succ_con_4, "tmi.twitch.tv" , "004", "twitch_username", "-"|];
+            [|msg_succ_con_5, "tmi.twitch.tv" , "372", "twitch_username", "You are in a maze of twisty passages, all alike."|];
+            [|msg_succ_con_6, "tmi.twitch.tv" , "376", "twitch_username", ">"|];
         |]
 
     [<TestCaseSource("TestData")>]
-    member x.``twitch says hello`` (testData:(string*string*string*string*string)) =
-        let msg, serv, code, nickname, text = testData
+    member x.``test regex successful connection`` (testData:(string*string*string*string*string)) =
+        let cmd, serv, code, nickname, text = testData
         
-        let retv_msg = parseMessage msg
+        let retv_msg = parseMessage cmd
 
         match retv_msg with
-        | Info m -> 
-            m.TwitchAddr |> should equal serv
+        | SuccConnection m -> 
+            m.TwitchGroup |> should equal serv
             m.Code |> should equal code
             m.Nickname |> should equal nickname
             m.Message |> should equal text
@@ -52,38 +51,154 @@ type ``Recv: Upon a Successful Connection`` () =
             true |> should equal false
 
 //
-// Commands you can send
+// PING
+// 
+
+[<Test>]
+let``Recv: test regex ping``()=
+    let msg = "PING :tmi.twitch.tv"
+    let cmd = parseMessage msg
+
+    match cmd with
+    | Ping  -> 
+        true |> should equal true       
+    | _ -> true |> should equal false 
+
+//
+// Invalid commands you can send
 // WHO #channel
 // 
 
-// TODO: test
-let command_invalid = ":tmi.twitch.tv 421 twitch_username WHO :Unknown command"
+let msg_invalidCommand = ":tmi.twitch.tv 421 twitch_username WHO :Unknown command"
+
+[<TestFixture>]
+type ``Recv: test regex invalid command`` () = 
+    static member TestData =
+        [|
+            [|msg_invalidCommand, "tmi.twitch.tv" , "421", "twitch_username", "Unknown command"|];
+        |]
+
+    [<TestCaseSource("TestData")>]
+    member x.``Recv: test regex invalid command`` (testData:(string*string*string*string*string)) =
+        let cmd, twitchGroup, code, nickname, message = testData
+        
+        let retv_msg = parseMessage cmd
+
+        match retv_msg with
+        | InvalidCommand m -> 
+            m.TwitchGroup |> should equal twitchGroup
+            m.Code |> should equal code
+            m.Nickname |> should equal nickname
+            m.Message |> should equal message
+        | _ -> 
+            true |> should equal false
+
 
 //
 // JOIN: Opening up a chat room
 // JOIN #channel
 //
+
+[<Test>]
+let``Recv: test regex channel Join``()=
+    let msg = ":twitch_username!twitch_username@twitch_username.tmi.twitch.tv JOIN #channel"
+    let cmd = parseMessage msg
+
+    match cmd with     
+    | ChannelJoin m -> 
+        m.NicknameAlterative |> should equal "twitch_username"
+        m.Nickname |> should equal "twitch_username"
+        m.Channel |> should equal "#channel"
+    | _ -> true |> should equal false
+
  
-let command_join_1 = ":twitch_username!twitch_username@twitch_username.tmi.twitch.tv JOIN #channel"
-let command_join_2 = ":twitch_username.tmi.twitch.tv 353 twitch_username = #channel :twitch_username"
-let command_join_3 = ":twitch_username!twitch_username@twitch_username.tmi.twitch.tv JOIN #channel"
+[<Test>]
+let``Recv: test regex channel nicknames``()=
+    let msg = ":twitch_username.tmi.twitch.tv 353 twitch_username = #channel :twitch_username"
+    let cmd = parseMessage msg
+
+    match cmd with     
+    | ChannelNicknames m -> 
+        m.Nickname |> should equal "twitch_username"
+        m.Code |> should equal "353"
+        m.NicknameJoin |> should equal "twitch_username"
+        m.Channel |> should equal "#channel"
+        m.Nicknames |> should equal "twitch_username"
+    | _ -> true |> should equal false
+
+
+[<Test>]
+let``Recv: test regex channel nicknames end``()=
+    let msg = ":twitch_username.tmi.twitch.tv 366 twitch_username #channel :End of /NAMES list"
+    let cmd = parseMessage msg
+
+    match cmd with
+    | ChannelNicknamesEnd m ->
+        m.NameAddr |> should equal "twitch_username"
+        m.Code |> should equal "366"
+        m.Nickname |> should equal "twitch_username"
+        m.Channel |> should equal "#channel"
+    | _ -> true |> should equal false
+
 
 //
 // PART: Leaving a chat room
 // PART #channel
 // 
 
-let cmd_part = ":twitch_username!twitch_username@twitch_username.tmi.twitch.tv PART #channel"
+[<Test>]
+let``Recv: test regex channel part/leave``()=
+    let msg = ":twitch_username!twitch_username@twitch_username.tmi.twitch.tv PART #channel"
+    let cmd = parseMessage msg
+
+    match cmd with
+    | ChannelLeave m ->
+        m.NicknameAlterative |> should equal "twitch_username"
+        m.Nickname |> should equal "twitch_username"
+        m.Channel |> should equal "#channel"
+    | _ -> true |> should equal false
 
 //
 // PRIVMSG: Sending a message
 // PRIVMSG #channel :Message to send
 // 
 
-let cmd_pvtmsg = ":twitch_username!twitch_username@twitch_username.tmi.twitch.tv PRIVMSG #channel :message here"
+let msg_msg1 = ":twitch_username!twitch_username@twitch_username.tmi.twitch.tv PRIVMSG #channel :message here"
+
+// Test EN locale.
+let msg_en = ":nickname!nickname@nickname.tmi.twitch.tv PRIVMSG #gamer2 :So is this the stream with giveaways?"
+// Test russian locale.
+let msg_ru = ":nightbot!nightbot@nightbot.tmi.twitch.tv PRIVMSG #lady__angel :хочешь порадовать девушку или выразить благодарность"
+
+// TODO: find and test nickname with alternative.
+
+[<TestFixture>]
+type ``Recv: test regex channel message`` () = 
+    static member TestData =
+        [|
+            [|msg_msg1, "twitch_username" , "twitch_username", "#channel", "message here"|];
+            [|msg_en, "nickname" , "nickname", "#gamer2", "So is this the stream with giveaways?"|];
+            [|msg_ru, "nightbot" , "nightbot", "#lady__angel", "хочешь порадовать девушку или выразить благодарность"|];
+        |]
+
+    [<TestCaseSource("TestData")>]
+    member x.``test regex successful connection`` (testData:(string*string*string*string*string)) =
+        let cmd, nicknameAlterative, nickname, channel, message = testData
+        
+        let retv_msg = parseMessage cmd
+
+        match retv_msg with
+        | ChanellMessage m ->
+            m.NicknameAlterative |> should equal nicknameAlterative
+            m.Nickname |> should equal nickname
+            m.Channel |> should equal channel
+            m.Message |> should equal message
+        | _ -> true |> should equal false
+
 
 //
 // Twitch Capabilities.
+// TODO: move from here.
 //
 
 //
@@ -212,157 +327,3 @@ let IRCv3_GLOBALUSERSTATE = "@color=#0D4200;display-name=TWITCH_UserNaME;emote-s
 
 let IRCv3_ROOMSTATE = "@broadcaster-lang=;r9k=0;slow=0;subs-only=0 :tmi.twitch.tv ROOMSTATE #channel"
 
-
-
-
-// ORDER tests, use examles from manual
-
-// Test EN locale.
-let msg_en = ":nickname!nickname@nickname.tmi.twitch.tv PRIVMSG #gamer2 :So is this the stream with giveaways?"
-
-let f_Nicname = "nickname"
-let f_NameAddr = "nickname@nickname.tmi.twitch.tv"
-let f_Cmd = "PRIVMSG"
-let f_Channel = "#gamer2"
-let f_MessageStarts = "So"
-
-// Test russian locale.
-let msg_ru = ":nightbot!nightbot@nightbot.tmi.twitch.tv PRIVMSG #lady__angel :хочешь порадовать девушку или выразить благодарность"
-
-let nb_Nicname = "nightbot"
-let nb_NameAddr = "nightbot@nightbot.tmi.twitch.tv"
-let nb_Cmd = "PRIVMSG"
-let nb_Channel = "#lady__angel"
-let nb_MessageStarts = "хочешь"
-
-// Hello messages
-let msg_hello = ":tmi.twitch.tv 001 nickname :Welcome, GLHF!"
-
-let msgHello_TwitchAddr = "tmi.twitch.tv"
-let msgHello_Code = "001"
-let msgHello_Nickname = "nickname"
-let msgHello_Message = "Welcome, GLHF!"
-
-// Ping
-let msg_ping = "PING :tmi.twitch.tv"
-
-let msgPing_TwitchAddr = "tmi.twitch.tv"
-
-[<Test>]
-let``test message parse EN``()=
-    let retv_msg = parseMessage msg_en
-    
-    match retv_msg with
-    | Msg m -> 
-        m.Nickname |> should equal f_Nicname
-        m.NameAddr |> should equal f_NameAddr
-        m.Cmd |> should equal f_Cmd
-        m.Channel |> should equal f_Channel
-        m.Message |> should startWith f_MessageStarts
-    | _ -> 
-        true |> should equal false
-
-[<Test>]
-let``test message parse RU``()=
-    let retv_msg = parseMessage msg_ru
-    
-    match retv_msg with
-    | Msg m -> 
-        m.Nickname |> should equal nb_Nicname
-        m.NameAddr |> should equal nb_NameAddr
-        m.Cmd |> should equal nb_Cmd
-        m.Channel |> should equal nb_Channel
-        m.Message |> should startWith nb_MessageStarts
-    | _ -> 
-        true |> should equal false
-
-
-[<Test>]
-let``test message parse Hello type``()=
-    let retv_msg = parseMessage msg_hello
-    
-    match retv_msg with
-    | Info m -> 
-        m.TwitchAddr |> should equal msgHello_TwitchAddr
-        m.Code |> should equal msgHello_Code
-        m.Nickname |> should equal msgHello_Nickname
-        m.Message |> should startWith msgHello_Message
-    | _ -> 
-        true |> should equal false
-
-
-[<Test>]
-let``test message parse Ping``()=
-    let retv_msg = parseMessage msg_ping
-    
-    match retv_msg with
-    | Ping m -> 
-        m.TwitchAddr |> should equal msgPing_TwitchAddr
-    | _ -> 
-        true |> should equal false
-
-// Hello messages
-let msg_Nick = ":twitch_username.tmi.twitch.tv 353 twitch_username = #channel :twitch_username"
-
-let msgNick_TwitchAddr = "twitch_username.tmi.twitch.tv"
-let msgNick_Code = "353"
-let msgNick_Nickname = "twitch_username"
-let msgNick_Channel = "#channel"
-let msgNick_Nickname2 = "twitch_username"
-
-[<Test>]
-let``test message parse JOIN nicknames``()=
-    let retv_msg = parseMessage msg_Nick
-    
-    match retv_msg with
-    | Nicknames m -> 
-        m.TwitchAddr |> should equal msgNick_TwitchAddr
-        m.Code |> should equal msgNick_Code
-        m.Nickname1 |> should equal msgNick_Nickname
-        m.Channel |> should equal msgNick_Channel
-        m.Nickname2 |> should equal msgNick_Nickname2
-    | _ -> 
-        true |> should equal false
-
-
-let msg_join = ":twitch_username!twitch_username@twitch_username.tmi.twitch.tv JOIN #channel"
-
-let msgJoin_Nickname = "twitch_username"
-let msgJoin_TwitchAddr = "twitch_username@twitch_username.tmi.twitch.tv"
-let msgJoin_Cmd = "JOIN"
-let msgJoin_Channel = "#channel"
-
-[<Test>]
-let``test message parse JOIN message``()=
-    let retv_msg = parseMessage msg_join
-    
-    match retv_msg with
-    | ChanellJoin m -> 
-        m.Nickname |> should equal msgJoin_Nickname
-        m.NameAddr |> should equal msgJoin_TwitchAddr
-        m.Cmd |> should equal msgJoin_Cmd
-        m.Channel |> should equal msgJoin_Channel
-    | _ -> 
-        true |> should equal false
-
-let msg_endNames = ":twitch_username.tmi.twitch.tv 366 twitch_username #channel :End of /NAMES list"
-
-let msgendNames_nameaddr = "twitch_username.tmi.twitch.tv"
-let msgendNames_code = "366"
-let msgendNames_nickname = "twitch_username"
-let msgendNames_Channel = "#channel"
-let msgendNames_message = "End of /NAMES list"
-
-[<Test>]
-let``test message parse End of Names``()=
-    let retv_msg = parseMessage msg_endNames
-    
-    match retv_msg with
-    | NicknamesEnd m -> 
-        m.NameAddr |> should equal msgendNames_nameaddr
-        m.Code |> should equal msgendNames_code        
-        m.Nickname |> should equal msgendNames_nickname
-        m.Channel |> should equal msgendNames_Channel
-        m.Message |> should equal msgendNames_message
-    | _ -> 
-        true |> should equal false

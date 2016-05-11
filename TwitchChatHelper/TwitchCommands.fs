@@ -28,9 +28,22 @@ let IrcConnectAsync (conn:TcpClient) = async{
    
 /// Get StreamReader for TcpClient. 
 let IrcReaderAsync (client: TcpClient) = async {
-    let! conn = IrcConnectAsync client
-    let sr = new StreamReader( conn.GetStream() )
-    return sr 
+    //try
+        let! conn = IrcConnectAsync client
+        let sr = new StreamReader( conn.GetStream() )
+        return sr
+//    with
+//    | :? IOException as msg -> 
+//        // force connect again, Connected failed.
+//        printfn "RECONNECT on EXC"
+//        client.Connect(server, port)
+//
+//        let! conn = IrcConnectAsync client
+//        let sr = new StreamReader( conn.GetStream() )
+//        return Some(sr)
+//    | _ -> 
+//        reraise()
+//        return None 
 }
 
 /// Get StreamWriter for TcpClient. 
@@ -44,6 +57,7 @@ let IrcWriterAsync (client: TcpClient) = async {
 /// Receive message async.
 let ReceiveMessageAsync (conn:TcpClient) = async{
     let! cli = IrcReaderAsync conn
+    //let msg = cli |> Option.map (fun v -> v.ReadLineAsync() |> Async.AwaitTask) 
     let msg2 = cli.ReadLineAsync() |> Async.AwaitTask
 
     return! msg2
@@ -91,7 +105,7 @@ let SendJoinAsync(channel:string)(conn:TcpClient) = async{
 /// Send PONG.
 let SendPong(conn:TcpClient) =
     let irc_writer = IrcWriterAsync conn |> Async.RunSynchronously
-    irc_writer.WriteLine( "PONG :tmi.twitch.tv" )
+    irc_writer.WriteLineAsync( "PONG :tmi.twitch.tv" ) |> Async.AwaitTask
 
 /// Send PONG async.
 let SendPongAsync(conn:TcpClient) = async{

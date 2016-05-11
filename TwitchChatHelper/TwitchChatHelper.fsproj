@@ -25,7 +25,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Debug\TwitchChatHelper.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
-    <StartArguments>--filelog twitch_msg_log.txt --channel #margaret_hilda_thatcher"</StartArguments>
+    <StartArguments>--filelog twitch_msg_log.txt --channel #ritagamer2</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>

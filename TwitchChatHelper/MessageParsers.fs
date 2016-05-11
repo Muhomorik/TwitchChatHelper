@@ -7,87 +7,167 @@ open System.Text.RegularExpressions
 open ConsoleOutHelpers
 open MessageTypes
 
+/// RegEx for successful connection message.
+[<Literal>]
+let pattern_successfulConnection =  @"^:(?<twitchGroup>[\w\.]+)\s+(?<code>\d+)\s+(?<nickname>[\w_\.]+)\s+:(?<message>.*)$"
 
-/// RegEx for chanell messages.
-let pattern_ChanellMsg = @"^:(?<nickname>\w*)!(?<nameaddr>\w*@\w*\.\w*\.twitch.tv)\s+(?<cmd>\w*)\s+(?<channel>#\w*)\s*:(?<message>.*)$"
+let (|PatternSuccConn|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern_successfulConnection, RegexOptions.Compiled) 
+   match m.Success with
+   | true -> 
+        let p = SuccConnection {
+            TwitchGroup = m.Groups.["twitchGroup"].Value
+            Code = m.Groups.["code"].Value
+            Nickname = m.Groups.["nickname"].Value
+            Message = m.Groups.["message"].Value
+            }
+        Some(p)
+   | false -> None
 
-/// RegEx for ifo (login) messages
-let pattern_info = @"^:(?<twitchaddr>[\w\.]+)\s+(?<code>\d+)\s+(?<nickname>[\w_\.]+)\s+:(?<message>.*)$"
+/// RegEx for successful connection message.
+/// PING :tmi.twitch.tv
+[<Literal>]
+let pattern_ping =  @"^PING :tmi.twitch.tv$"
 
-/// RegEx for Ping message.
-let pattern_ping = @"^PING :(?<twitchaddr>[\w\.]+)$"
+let (|PatternPing|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern_ping, RegexOptions.Compiled) 
+   match m.Success with
+   | true ->  Some(Ping)
+   | false -> None
 
-/// RegEx. Twitch JOIN message response.
-let pattern_ChanellJoin = @"^:(?<nickname>\w*)!(?<nameaddr>[\w\.@]+)\s+(?<cmd>\w*)\s+(?<channel>#\w*)$"
+/// RegEx for invalid command.
+[<Literal>]
+let pattern_invalidCommand =  @"^:(?<twitchGroup>[\w\.]+)\s+(?<code>\d+)\s+(?<nickname>[\w_\.]+)\s+WHO\s*:(?<message>.*)"
 
-/// Twitch JOIN response with nicknames, code 353.
-let pattern_ChanellNicknames = @"^:(?<nameaddr>[\w\.]+)\s+(?<code>\w*)\s+(?<nickname1>[\w_\._]+)\s+=\s+(?<channel>#\w*)\s+:(?<nickname2>[\w_\.]+)$"
+let (|PatternInvalidCommand|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern_invalidCommand, RegexOptions.Compiled) 
+   match m.Success with
+   | true -> 
+        let p = InvalidCommand {
+            TwitchGroup = m.Groups.["twitchGroup"].Value
+            Code = m.Groups.["code"].Value
+            Nickname = m.Groups.["nickname"].Value
+            Message = m.Groups.["message"].Value
+            }
+        Some(p)
+   | false -> None
+
+[<Literal>]
+let pattern_channelJoin = @"^:(?<nicknameAlt>[\w]{2,24})!(?<nickname>[\w]{2,24})@(?<nickname2>[\w]{2,24})\.tmi\.twitch\.tv\s+JOIN\s+(?<channel>#[\w]{2,24})$"
+
+let (|PatternChannelJoin|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern_channelJoin, RegexOptions.Compiled) 
+   match m.Success with
+   | true ->
+        // check nicknames (unclead if ok)
+        let nickname = m.Groups.["nickname"].Value 
+        let nickname2 = m.Groups.["nickname2"].Value
+        if nickname <> nickname2 then printfn "NICKNAMES NOT EQUAL: %s, %s" nickname nickname2
+         
+        let p = ChannelJoin {
+            NicknameAlterative = m.Groups.["nicknameAlt"].Value
+            Nickname = m.Groups.["nickname"].Value
+            Channel = m.Groups.["channel"].Value
+            }
+        Some(p)
+   | false -> None
+
+/// Twitch JOIN response with nicknames, code 353. TODO: figure out what is what.
+/// :twitch_username.tmi.twitch.tv 353 twitch_username = #channel :twitch_usernames
+[<Literal>]
+let pattern_ChanellNicknames = @"^:(?<nickname>[\w]{2,24})\.tmi\.twitch\.tv\s+(?<code>\w*)\s+(?<nicknameJoin>[\w_\._]+)\s+=\s+(?<channel>#\w*)\s+:(?<nicknames>[\w_\.]+)$"
+
+let (|PatternChannelNicknames|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern_ChanellNicknames, RegexOptions.Compiled) 
+   match m.Success with
+   | true ->
+        let p = ChannelNicknames {
+            Nickname = m.Groups.["nickname"].Value
+            Code = m.Groups.["code"].Value
+            NicknameJoin = m.Groups.["nicknameJoin"].Value
+            Channel = m.Groups.["channel"].Value
+            Nicknames = m.Groups.["nicknames"].Value
+            }
+        Some(p)
+   | false -> None
+
 
 /// Twitch end of nicknames, code 366.
-let pattern_ChanellNicknamesEnd = @"^:(?<nameaddr>[\w\.]+)\s+(?<code>\w*)\s+(?<nickname>[\w_\._]+)\s+(?<channel>#\w*)\s+:(?<message>[\w \/]+)$"
+/// :twitch_username.tmi.twitch.tv 366 twitch_username #channel :End of /NAMES list
+[<Literal>]
+let pattern_ChanellNicknamesEnd = @"^:(?<nameaddr>[\w]{2,24})\.tmi\.twitch\.tv\s+(?<code>\w*)\s+(?<nickname>[\w_\._]+)\s+(?<channel>#\w*)\s+:End of /NAMES list$"
 
+let (|PatternChannelNicknamesEnd|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern_ChanellNicknamesEnd, RegexOptions.Compiled) 
+   match m.Success with
+   | true ->
+        let p = ChannelNicknamesEnd {
+            NameAddr = m.Groups.["nameaddr"].Value
+            Code = m.Groups.["code"].Value
+            Nickname = m.Groups.["nickname"].Value
+            Channel = m.Groups.["channel"].Value
+            }
+        Some(p)
+   | false -> None
 
-///Match the pattern using a cached compiled Regex
-let (|CompiledMatch|_|) pattern input =
-    if input = null then None
-    else
-        let m = Regex.Match(input, pattern, RegexOptions.Compiled)
-        if m.Success then Some(List.tail [ for g in m.Groups -> g.Value ])
-        else None
+/// PART: Leaving a chat room
+/// :twitch_username!twitch_username@twitch_username.tmi.twitch.tv PART #channel
+[<Literal>]
+let pattern_channelPart = @"^:(?<nicknameAlt>[\w]{2,24})!(?<nickname>[\w]{2,24})@(?<nickname2>[\w]{2,24})\.tmi\.twitch\.tv\s+PART\s+(?<channel>#[\w]{2,24})$"
+
+let (|PatternChannelPart|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern_channelPart, RegexOptions.Compiled) 
+   match m.Success with
+   | true ->
+        // check nicknames (unclead if ok)
+        let nickname = m.Groups.["nickname"].Value 
+        let nickname2 = m.Groups.["nickname2"].Value
+        if nickname <> nickname2 then printfn "NICKNAMES NOT EQUAL: %s, %s" nickname nickname2
+         
+        let p = ChannelLeave {
+            NicknameAlterative = m.Groups.["nicknameAlt"].Value
+            Nickname = m.Groups.["nickname"].Value
+            Channel = m.Groups.["channel"].Value
+            }
+        Some(p)
+   | false -> None
+
+/// RegEx for chanell messages.
+
+let pattern_ChanellMsg = @"^:(?<nicknameAlt>[\w]{2,24})!(?<nickname>[\w]{2,24})@(?<nickname2>[\w]{2,24})\.tmi\.twitch\.tv\s+PRIVMSG\s+(?<channel>#[\w]{2,24})\s*:(?<message>.*)$"
+
+let (|PatternChannelMessage|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern_ChanellMsg, RegexOptions.Compiled) 
+   match m.Success with
+   | true ->
+        // check nicknames (unclead if ok)
+        let nickname = m.Groups.["nickname"].Value 
+        let nickname2 = m.Groups.["nickname2"].Value
+        if nickname <> nickname2 then printfn "NICKNAMES NOT EQUAL: %s, %s" nickname nickname2
+         
+        let p = ChanellMessage {
+            NicknameAlterative = m.Groups.["nicknameAlt"].Value
+            Nickname = m.Groups.["nickname"].Value
+            Channel = m.Groups.["channel"].Value
+            Message = m.Groups.["message"].Value
+            }
+        Some(p)
+   | false -> None
 
 /// Parse message into object.
-let parseMessage name =
-    match name with
-    | CompiledMatch pattern_ChanellMsg [nickname; nameAddr; cmd; channel; message] ->
-        let p = Msg {
-                Nickname = nickname
-                NameAddr = nameAddr
-                Cmd = cmd
-                Channel = channel
-                Message = message
-            }
-        p
-    | CompiledMatch pattern_info [addr; code; nickname; message] ->
-        let p = Info {
-                TwitchAddr = addr
-                Code = code
-                Nickname = nickname
-                Message = message
-            }
-        p
-    | CompiledMatch pattern_ping [addr] ->
-        let p = Ping {
-                TwitchAddr = addr
-            }
-        p
-    | CompiledMatch pattern_ChanellJoin [nickname; nameaddr; cmd; chanell] ->
-        let p = ChanellJoin {
-                Nickname = nickname
-                NameAddr = nameaddr
-                Cmd = cmd
-                Channel = chanell
-            }
-        p
-    | CompiledMatch pattern_ChanellNicknames [addr; code; nickname1; chanell; nickname2] ->
-        let p = Nicknames {
-                TwitchAddr = addr
-                Code = code
-                Nickname1 = nickname1
-                Channel = chanell
-                Nickname2 = nickname2
-            }
-        p
-    | CompiledMatch pattern_ChanellNicknamesEnd [nameaddr; code; nickname; chanell; message] ->
-        let p = NicknamesEnd {
-                NameAddr = nameaddr
-                Code = code
-                Nickname = nickname
-                Channel = chanell
-                Message = message
-            }
-        p
-    | _ -> 
-        let p = Other name
-        p
+let parseMessage cmd =
+    match cmd with
+    // often used commands.
+    | PatternChannelMessage a -> a    
+    | PatternPing a -> a
+    // Less common commands.
+    | PatternSuccConn a -> a
+    | PatternInvalidCommand a -> a
+    | PatternChannelJoin a -> a
+    | PatternChannelNicknames a -> a
+    | PatternChannelNicknamesEnd a -> a
+    | PatternChannelPart a -> a
+    /// Unknown cmd, log it and fix later.
+    | _ -> Other cmd
 
 
