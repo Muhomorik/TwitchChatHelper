@@ -13,17 +13,36 @@ Note to myself:
 - Login done using the OAuth token, get it at http://twitchapps.com/.
 - Don't push it to GitHub :D
 
+**DateTime.Now** is used internally everywhere.
+
+# Flow #
+
+Everything starts in main thread where command line arguments are read and parsed.
+
+Messages are receive in loop and parsed. Parsed messages are printed and logged in main. Also, it is send to the Reader Mailbox (fire-and-forget).
+
+![chetHelperFlowYed](chetHelperFlowYed.png)
+
+## Mailbox agents ##
+
+There are two main F# MailboxProcessor agents here. Lightweight mailboxes, runs in own thread asynchronously.
+
+- **ReaderMailbox**. Write handlers here. Handles received messages and Posts replies back via WriterMailbox.
+- **WriterMailbox**. Send replies back to twitch. Output rate is limited according to limits.
+
+# Screenshots #
+
 Login
 
-![](myimg/screen_login.png)
+![screen_login](myimg/screen_login.png)
 
 Chat
 
-![](myimg/screen_chat.png)
+![screen_chat](myimg/screen_chat.png)
 
-##  Config ##
+#  Config #
 
-* Is storedMyCfg.fs so far. Username and oauth.
+* Is stored in MyCfg.fs so far. Username and oauth.
 
 ## Command line args: ##
 
@@ -43,3 +62,5 @@ If the file is missing, the default one is going to be used.
 
 - [ ] Config: nickname, oauth login to settings file (or smth)
 - [ ] Floating window message/pm counter, avoid bans.
+- [ ] TcpClient somehow got in here from examples. Change to HttClient from NuGet.
+

@@ -1,44 +1,36 @@
 ﻿// Learn more about F# at http://fsharp.org
 // See the 'F# Tutorial' project for more help.
-open System
-open System.IO
-open System.Text
-open System.Net
-open System.Net.Sockets
-open System.Text.RegularExpressions
-
-//open Argu
 
 open MyCfg
 
-open MessageTypes
+open System
+open System.IO
+open System.Text
+
 open MessageParsers
-open TwitchCommands
 open CliArguments
+open MessagePrint
+open MailboxSender
+open MessageTypes
 
-// File writer
-let testWrite(line:string) = async {
-    use sw = new StreamWriter(new FileStream("twitch_log_other.txt",  FileMode.Append, FileAccess.Write, FileShare.Write, bufferSize= 4096, useAsync= true))
-    do! sw.WriteLineAsync(line) |>  Async.AwaitTask
-}
+/// Process one read from input stream.
+let processOneLine (ircReader:StreamReader)(logFile :string) = 
+    let msg_string = ircReader.ReadLine()
+    match msg_string with
+    | null -> () /// wtf?
+    | _ -> 
+        let msg = parseMessage msg_string
+        PrintMsg msg        
+        MailboxReceiver.MailboxReceiver.PostMessage msg
+        
+        // TODO: this should be lgged inside the mailbox. But there is now way to send log file as parameter.
+        // Alt is to dynnamically create file with tules there (like chan name).
+        match msg with 
+        | ChanellMessage message ->              
+            FileLogger.LogMessageAsync logFile message.Message |> Async.RunSynchronously
+        | _ -> ()
+        
 
-/// Process received message.
-let ProcessMessageAsync (fileWriter:StreamWriter) (ircClient:TcpClient) = async{
-    let! msgText = ReceiveMessageAsync ircClient
-
-    let msg = parseMessage msgText
-    MailboxReceiver.MailboxReceiver.PostMessage(msg)
-
-    match msg with
-    | ChanellMessage m -> 
-        fileWriter.WriteLine(m.Message)    
-
-    | Ping -> 
-        do! SendPongAsync ircClient
-        MailboxReceiver.MailboxReceiver.PostPong()
-    | Other o -> do! testWrite msgText // async to err file (full line), should not be many.
-    | _  -> ()
-}
 
 // big chans problem
 // http://stackoverflow.com/questions/36116231/using-writelineasync-in-f
@@ -62,19 +54,15 @@ let main argv =
     let channel = results   |> parseChannel
                             |> ReadChannelFromConsole 
 
-    // Login and join channel.
-    use irc_client = new TcpClient() |> IrcConnectAsync |> Async.RunSynchronously
-    use irc_reader = IrcReaderAsync irc_client          |> Async.RunSynchronously        
+    let irc_reader = Connection.GetReaderInstance()
 
     // Login and join.
-    LoginAndJoinAsync oauth nick channel irc_client     |> Async.StartImmediate
+    MailboxSender.PostAndReplyLogin oauth nick |> ignore // must wait for result.
+    MailboxSender.PostAndReplyJoin channel |> ignore // must wait for result.
 
-    /// File to write message log.
-    use fileWriter = new StreamWriter(logFile, true ) // append
-    fileWriter.AutoFlush <- true
-    
+    // Read untill end.
     while not irc_reader.EndOfStream do
-        ProcessMessageAsync fileWriter irc_client  |> Async.RunSynchronously
-
+        processOneLine irc_reader logFile
+    
     printfn "Done"
     0 // return an integer exit code

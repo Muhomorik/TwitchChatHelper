@@ -57,6 +57,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="MessageParsersTest.fs" />
     <Compile Include="MessageParsersCapabilities.fs" />
+    <Compile Include="MessageCounterTest.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />

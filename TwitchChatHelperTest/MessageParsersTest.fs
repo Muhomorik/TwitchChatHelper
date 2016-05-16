@@ -36,7 +36,7 @@ type ``Recv: Upon a Successful Connection`` () =
         |]
 
     [<TestCaseSource("TestData")>]
-    member x.``test regex successful connection`` (testData:(string*string*string*string*string)) =
+    member x.``Test regex successful connection`` (testData:(string*string*string*string*string)) =
         let cmd, serv, code, nickname, text = testData
         
         let retv_msg = parseMessage cmd

@@ -59,11 +59,15 @@
     <Compile Include="MyCfg.fs" />
     <Compile Include="ConsoleOutHelpers.fs" />
     <Compile Include="MessageTypes.fs" />
+    <Compile Include="CommandTypes.fs" />
     <Compile Include="MessageParsers.fs" />
     <Compile Include="TwitchCommands.fs" />
     <Compile Include="MessagePrint.fs" />
     <Compile Include="FileLogger.fs" />
     <Compile Include="CliArguments.fs" />
+    <Compile Include="Connection.fs" />
+    <Compile Include="MessageCounter.fs" />
+    <Compile Include="MailboxSender.fs" />
     <Compile Include="MailboxReceiver.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />

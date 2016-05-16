@@ -1,14 +1,20 @@
 ﻿module MailboxReceiver
 
 open MessageTypes
-open ConsoleOutHelpers
-open MessagePrint
+open System
+open MailboxSender
+open System.Collections.Concurrent
 
-type parserMsg =
-    | Msg of Message
-    | Pong // resonse to ping.
-    | Done
+/// thread-safe first in-first out (FIFO) collection
+let private cmdCounter = ConcurrentQueue<int>()
 
+/// Local Enqueue function.
+let cmdEnqueue() = MessageCounter.cmdEnqueue cmdCounter
+
+/// Remove old values from counter (partial). Add current unix time as parameter.
+let cleanOld = MessageCounter.cleanOldCmd cmdCounter
+
+/// Process received messages.
 type MailboxReceiver () = 
 
     /// Create the agent
@@ -18,26 +24,45 @@ type MailboxReceiver () =
         let rec messageLoop() = async{
             let! msg = inbox.Receive()
 
+            // Message counter.
+            // Remove old values.
+            let unixTime = MessageCounter.dateTimeToUnixTime DateTime.Now
+            cleanOld unixTime
+
+            // Process based on message type.
             match msg with 
-            | Msg message ->              
-                PrintMsg message
+            | ChanellMessage message ->              
+                /// TODO: handle message.
                 return! messageLoop()
-            | Pong -> 
-                printColored colorPing ("PONG")
+            | SuccConnection a-> 
                 return! messageLoop()
-            | Done -> 
-                printfn "Done!"
-                return () 
+            | Ping -> 
+                MailboxSender.PostPong()
+                return! messageLoop()
+            | InvalidCommand a -> 
+                return! messageLoop()
+            | ChannelJoin a -> 
+                return! messageLoop()
+            | ChannelNicknames a -> 
+                return! messageLoop()
+            | ChannelNicknamesEnd a -> 
+                return! messageLoop()
+            | ChannelLeave a -> 
+                return! messageLoop()
+            | Other a ->
+                do! FileLogger.LogWriteOtherAsync a // async to err file (full line), should not be many.
+                return! messageLoop()
             }
 
         // start the loop 
         messageLoop()
         )
 
-    // public interface to hide the implementation
-    static member DoDone () = agent.Post( Done )
-    static member PostMessage (i:Message) = agent.Post( Msg(i) )
-    static member PostPong () = agent.Post( Pong )
+    /// Post message
+    static let postMessage (i:Message) = 
+        cmdEnqueue()
+        agent.Post( i )
 
-//let x = new MessageBasedCounter()
-//MessageBasedCounter.DoDone()
+    // public interface to hide the implementation
+    static member PostMessage (i:Message) = postMessage i 
+

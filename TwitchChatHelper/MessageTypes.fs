@@ -1,5 +1,7 @@
 ﻿module MessageTypes
 
+// Messages can be received.
+
 /// Twitch informational message like 'hello'.
 /// :tmi.twitch.tv 003 twitch_username :This server is rather new
 type MessageSuccConn = {
