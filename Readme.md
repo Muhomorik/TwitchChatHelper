@@ -15,6 +15,16 @@ Note to myself:
 
 **DateTime.Now** is used internally everywhere.
 
+# Workign on #
+
+**Docker** build fails on mono (TcpClient). The idea is to be able to run in container. Docker build file is [here](Dockerfile).
+
+Build using:
+
+    cd \    
+    docker build -t twitchchathelper "C:\Users\Dmitri\Desktop\Documents\Visual Studio 2015\Projects\TwitchChatHelper"
+    docker run twitchchathelper
+
 # Flow #
 
 Everything starts in main thread where command line arguments are read and parsed.
