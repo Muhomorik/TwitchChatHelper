@@ -17,13 +17,22 @@ Note to myself:
 
 # Workign on #
 
-**Docker** build fails on mono (TcpClient). The idea is to be able to run in container. Docker build file is [here](Dockerfile).
+More agents!
 
-Build using:
+# Docker #
+The idea is to be able to run in container. Docker build file is [here](Dockerfile).
+
+Note: don't set target to .NET 4.5.2, assemblies are missing then. Use 4.5 or 4.6. 
+More about @ [mono/compatibility/](http://www.mono-project.com/docs/about-mono/compatibility/)
+
+Build using Docker CLI:
 
     cd \    
-    docker build -t twitchchathelper "C:\Users\Dmitri\Desktop\Documents\Visual Studio 2015\Projects\TwitchChatHelper"
-    docker run twitchchathelper
+    cd '.\Users\Dmitri\Desktop\Documents\Visual Studio 2015\Projects\TwitchChatHelper\'    
+    docker build -t mytwitchhelper .
+    docker run mytwitchhelper
+
+Currently builds with no parameters - programs exits.
 
 # Flow #
 
@@ -72,5 +81,5 @@ If the file is missing, the default one is going to be used.
 
 - [ ] Config: nickname, oauth login to settings file (or smth)
 - [ ] Floating window message/pm counter, avoid bans.
-- [ ] TcpClient somehow got in here from examples. Change to HttClient from NuGet.
+
 

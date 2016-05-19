@@ -37,6 +37,7 @@ type MailboxReceiver () =
             | SuccConnection a-> 
                 return! messageLoop()
             | Ping -> 
+                // This may be a problem...
                 MailboxSender.PostPong()
                 return! messageLoop()
             | InvalidCommand a -> 

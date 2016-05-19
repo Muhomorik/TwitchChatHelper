@@ -16,6 +16,7 @@ open MessageTypes
 /// Process one read from input stream.
 let processOneLine (ircReader:StreamReader)(logFile :string) = 
     let msg_string = ircReader.ReadLine()
+    
     match msg_string with
     | null -> () /// wtf?
     | _ -> 
@@ -37,6 +38,10 @@ let processOneLine (ircReader:StreamReader)(logFile :string) =
 // https://discuss.dev.twitch.tv/t/irc-client-can-send-but-not-receive/1533
 [<EntryPoint>]
 let main argv = 
+    // https://en.wikipedia.org/wiki/Text_mode
+    //Console.WindowWidth <- 132;
+    //Console.WindowHeight <- 50;
+     
     Console.OutputEncoding <- Encoding.Unicode    
     printf "%s \n" "Работаю!"  // Must print nice, or utf not set properly! "Working" iin russian.
 

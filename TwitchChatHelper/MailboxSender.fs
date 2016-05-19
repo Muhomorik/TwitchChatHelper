@@ -72,6 +72,7 @@ type MailboxSender () =
     /// Post Pong.
     static let postPong() = 
         cmdEnqueue()
+        printf "PONG"
         let irc_writer = Connection.GetWriterInstance()
         SendPong irc_writer
 
