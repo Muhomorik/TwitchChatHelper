@@ -53,6 +53,10 @@ type MailboxReceiver () =
             | ChannelNicknamesEnd a -> 
                 return! messageLoop()
             | ChannelLeave a -> 
+                return! messageLoop()            
+            
+            // Capabilities.
+            | MembershipAck a -> 
                 return! messageLoop()
             | Other a ->
                 do! FileLogger.LogWriteOtherAsync a // async to err file (full line), should not be many.

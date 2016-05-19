@@ -1,6 +1,7 @@
 ﻿module CommandTypes
 
 open MessageTypes
+open MessageTypesBasic
 
 /// Commands that can be send.
 

@@ -8,6 +8,8 @@ open NUnit.Framework
 open FsUnit
 
 open MessageTypes
+open MessageTypesBasic
+open MessageCapabilitiesTypes
 open MessageParsers
 
 /// MODE: Someone gained or lost operator:
@@ -20,7 +22,6 @@ type MessageMembershipMode = {
 
 /// Twitch message temp
 type MessageTmp = 
-  | MembershipAck of bool
   | MembershipMode of MessageMembershipMode
   | Other of string  // ofr not parsed messages.
 
@@ -30,19 +31,6 @@ type MessageTmp =
 
 /// RegEx for chanell messages.
 
-/// Pattern for membership capability ack.
-let (|PatternMembershipAck|_|) (cmd: string) =
-
-   // let pattern_CapMembershipAck = @"^:tmi\.twitch\.tv CAP \* ACK :twitch\.tv/membership$"
-   // let m = Regex.Match(cmd, pattern_CapMembershipAck, RegexOptions.Compiled) 
-   // match m.Success with
-   let x = String.Equals(":tmi.twitch.tv CAP * ACK :twitch.tv/membership", cmd, System.StringComparison.InvariantCultureIgnoreCase)
-   
-   match x with
-   | true ->
-        let p = MembershipAck true
-        Some(p)
-   | false -> None
 
 /// Converts mode string to bool value.
 /// 1: +o, 
@@ -71,8 +59,7 @@ let (|PatternMembershipMode|_|) (cmd: string) =
 /// Parse message into object.
 let parseMessage2 cmd =
     match cmd with
-    // often used commands.
-    | PatternMembershipAck a -> a    
+    // often used commands.  
     | PatternMembershipMode a -> a    
     | _ -> Other cmd
 
@@ -80,7 +67,7 @@ let parseMessage2 cmd =
 [<Test>]
 let``RecvCap: test membership ack``()=
     let msg = ":tmi.twitch.tv CAP * ACK :twitch.tv/membership"
-    let cmd = parseMessage2 msg
+    let cmd = parseMessage msg
 
     match cmd with
     | MembershipAck a  -> 
@@ -117,3 +104,7 @@ type ``Recv: test regex membership mode`` () =
             m.Username |> should equal username
         | _ -> 
             true |> should equal false
+
+
+// REAL ONES
+

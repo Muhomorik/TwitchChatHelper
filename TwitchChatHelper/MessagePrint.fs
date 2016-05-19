@@ -22,4 +22,9 @@ let PrintMsg message =
         printColored colorInfo (sprintf "LEAVE | %s | %s " p.Channel p.Nickname)
     | InvalidCommand p -> 
         printColored colorInfo (sprintf "LEAVE | %s | %s " p.Code p.Message)
+
+    // Capabilities.
+    | MembershipAck a -> 
+        printColored colorInfo (sprintf "Membership ACK | %b " a)
+
     | Other o -> printfn "Other: %s" o
