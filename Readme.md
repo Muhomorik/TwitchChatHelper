@@ -19,21 +19,6 @@ Note to myself:
 
 More agents!
 
-# Docker #
-The idea is to be able to run in container. Docker build file is [here](Dockerfile).
-
-Note: don't set target to .NET 4.5.2, assemblies are missing then. Use 4.5 or 4.6. 
-More about @ [mono/compatibility/](http://www.mono-project.com/docs/about-mono/compatibility/)
-
-Build using Docker CLI:
-
-    cd \    
-    cd '.\Users\Dmitri\Desktop\Documents\Visual Studio 2015\Projects\TwitchChatHelper\'    
-    docker build -t mytwitchhelper .
-    docker run mytwitchhelper
-
-Currently builds with no parameters - programs exits.
-
 # Flow #
 
 Everything starts in main thread where command line arguments are read and parsed.
@@ -72,6 +57,20 @@ If channel is missing console is going to ask for input.
 
 If the file is missing, the default one is going to be used.
 
+# Docker #
+The idea is to be able to run in container. Docker build file is [here](Dockerfile).
+
+Note: don't set target to .NET 4.5.2, assemblies are missing then. Use 4.5 or 4.6. 
+More about @ [mono/compatibility/](http://www.mono-project.com/docs/about-mono/compatibility/)
+
+Build using Docker CLI:
+
+    cd \    
+    cd '.\Users\Dmitri\Desktop\Documents\Visual Studio 2015\Projects\TwitchChatHelper\'    
+    docker build -t mytwitchhelper .
+    docker run mytwitchhelper
+
+Currently builds with no parameters - programs exits.
 ## Uses ##
 
 - Argu. A declarative CLI argument/XML configuration parser for F#
