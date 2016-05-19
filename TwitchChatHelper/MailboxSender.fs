@@ -3,6 +3,7 @@
 open System
 open System.Collections.Concurrent
 
+open ConsoleOutHelpers
 open TwitchCommands
 open CommandTypes
 
@@ -21,6 +22,9 @@ let cleanOld = MessageCounter.cleanOldCmd cmdCounter
 
 /// Wait for query to unlock (blocking, partial).
 let waitForUnlock = MessageCounter.waitForUnlock30 cmdCounter
+
+/// Counter for send messages.
+let senderCount() = cmdCounter.Count
 
 // TODO: there should be no prints here.
 
@@ -72,7 +76,7 @@ type MailboxSender () =
     /// Post Pong.
     static let postPong() = 
         cmdEnqueue()
-        printf "PONG"
+        printColored colorPing "PONG"
         let irc_writer = Connection.GetWriterInstance()
         SendPong irc_writer
 

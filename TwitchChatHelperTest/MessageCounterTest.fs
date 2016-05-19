@@ -15,6 +15,15 @@ let``test dateTimeToUnixTime``()=
     unix |> should equal 946854090
 
 [<Test>]
+let``test deadUnixTime``()=
+    
+    let dt = new DateTime(2000, 1, 2, 23, 1, 30)
+    let unixNow = dateTimeToUnixTime dt
+    let unixOld = deadUnixTime dt
+
+    unixNow - unixOld |> should equal 30
+
+[<Test>]
 let``test cmdEnqueue``()=
     
     let cmdCounter = ConcurrentQueue<int>()
@@ -51,14 +60,14 @@ let``test cleanOldCmd``()=
     
     let cmdCounter = ConcurrentQueue<int>()
 
-    cmdCounter.Enqueue <| 3
+    cmdCounter.Enqueue <| 1
+    cmdCounter.Enqueue <| 2
     cmdCounter.Enqueue <| 3
     cmdCounter.Enqueue <| 4
-    cmdCounter.Enqueue <| 4
     cmdCounter.Enqueue <| 5
-    cmdCounter.Enqueue <| 5
+    cmdCounter.Enqueue <| 6
 
     cmdCounter.Count |> should equal 6
 
-    cleanOldCmd cmdCounter 4
+    cleanOldCmd cmdCounter 4 6
     cmdCounter.Count |> should equal 2    

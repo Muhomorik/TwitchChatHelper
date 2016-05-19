@@ -12,7 +12,10 @@ let private cmdCounter = ConcurrentQueue<int>()
 let cmdEnqueue() = MessageCounter.cmdEnqueue cmdCounter
 
 /// Remove old values from counter (partial). Add current unix time as parameter.
-let cleanOld = MessageCounter.cleanOldCmd cmdCounter
+let cleanOld (unixStampOld:int)(unixStampNow:int) = MessageCounter.cleanOldCmd cmdCounter unixStampOld unixStampNow
+
+/// Counter for received messages.
+let reveicerCount() = cmdCounter.Count
 
 /// Process received messages.
 type MailboxReceiver () = 
@@ -27,7 +30,8 @@ type MailboxReceiver () =
             // Message counter.
             // Remove old values.
             let unixTime = MessageCounter.dateTimeToUnixTime DateTime.Now
-            cleanOld unixTime
+            let oldTime = MessageCounter.deadUnixTime DateTime.Now
+            cleanOld oldTime unixTime
 
             // Process based on message type.
             match msg with 

@@ -20,10 +20,10 @@ let dateTimeToUnixTime (dt:DateTime) =
     (int)unixTimestamp
 
 /// Get current time as Unix timestamp.
-let currentUnixTime() = dateTimeToUnixTime DateTime.UtcNow 
+let currentUnixTime() = dateTimeToUnixTime DateTime.Now 
 
 /// Dead-out time (now-30s).
-let deadUnixTime() = dateTimeToUnixTime (DateTime.UtcNow - new TimeSpan(0, 0, 30)) 
+let deadUnixTime (dtNow:DateTime) = dateTimeToUnixTime (dtNow - new TimeSpan(0, 0, 30)) 
 
 /// Add command to counter.
 let cmdEnqueue (cmdCounter:ConcurrentQueue<int>) = cmdCounter.Enqueue <| currentUnixTime()
@@ -40,16 +40,16 @@ let isOld (cmdCounter:ConcurrentQueue<int>) (unixStamOld:int)=
     | false -> false
 
 /// Remove old message count from counter.
-let cleanOldCmd (cmdCounter:ConcurrentQueue<int>)(unixStampNow:int) =
-    while (isOld cmdCounter unixStampNow) do
+let cleanOldCmd (cmdCounter:ConcurrentQueue<int>)(unixStampOld:int)(unixStampNow:int) =
+    while (isOld cmdCounter unixStampOld) do
         cmdCounter.TryDequeue() |> ignore
 
 let cmdCounterCount (cmdCounter:ConcurrentQueue<int>) = cmdCounter.Count
 
 /// Wait untill sender lock is out.
-let waitForUnlock (cmdCounter:ConcurrentQueue<int>)(limit:int)(unixTime:int) =
+let waitForUnlock (cmdCounter:ConcurrentQueue<int>)(limit:int)(unixStampOld:int)(unixTime:int) =
     while ((cmdCounterCount cmdCounter) > limit) do
-        cleanOldCmd cmdCounter unixTime
+        cleanOldCmd cmdCounter unixStampOld unixTime
         printfn "Waiting for sender to unlock..."
         Thread.Sleep(800)
 

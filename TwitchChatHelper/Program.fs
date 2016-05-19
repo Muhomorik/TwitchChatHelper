@@ -12,6 +12,19 @@ open CliArguments
 open MessagePrint
 open MailboxSender
 open MessageTypes
+open ConsoleOutHelpers
+
+let mutable lastStamp  = 1
+
+/// Print current Mailbox counters (temp, dev only).
+let printStats() = 
+    if lastStamp = 30 then
+        lastStamp <- 1
+        
+        let prt = sprintf "STATS. Reader: %d, writer: %d." (MailboxReceiver.reveicerCount()) (senderCount())
+        printColored ConsoleColor.DarkRed prt
+    else
+        lastStamp <- lastStamp + 1
 
 /// Process one read from input stream.
 let processOneLine (ircReader:StreamReader)(logFile :string) = 
@@ -23,7 +36,8 @@ let processOneLine (ircReader:StreamReader)(logFile :string) =
         let msg = parseMessage msg_string
         PrintMsg msg        
         MailboxReceiver.MailboxReceiver.PostMessage msg
-        
+        printStats() // TODO: better print. Remake.
+
         // TODO: this should be lgged inside the mailbox. But there is now way to send log file as parameter.
         // Alt is to dynnamically create file with tules there (like chan name).
         match msg with 
