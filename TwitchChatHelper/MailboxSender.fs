@@ -21,7 +21,7 @@ let cmdEnqueue() = MessageCounter.cmdEnqueue cmdCounter
 let cleanOld = MessageCounter.cleanOldCmd cmdCounter
 
 /// Wait for query to unlock (blocking, partial).
-let waitForUnlock = MessageCounter.waitForUnlock30 cmdCounter
+let waitForUnlock (unixTime:int) = MessageCounter.waitForUnlock30 cmdCounter unixTime
 
 /// Counter for send messages.
 let senderCount() = cmdCounter.Count
@@ -41,7 +41,10 @@ type MailboxSender () =
             // Message limiter/wait if too many.
             // Remove old values and wait untill lock is gone (if any).
             let unixTime = MessageCounter.dateTimeToUnixTime DateTime.Now
-            waitForUnlock unixTime // BLOCKING sleep.
+            let oldTime = MessageCounter.deadUnixTime DateTime.Now
+            
+            cleanOld oldTime unixTime
+            waitForUnlock unixTime 0// BLOCKING sleep.
 
             // Handle message
             match msg with 
