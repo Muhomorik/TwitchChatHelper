@@ -78,6 +78,9 @@ let main argv =
     // Login and join.
     MailboxSender.PostAndReplyLogin oauth nick |> ignore // must wait for result.
     MailboxSender.PostAndReplyJoin channel |> ignore // must wait for result.
+    
+    // TODO: from cli
+    MailboxSender.PostCapabilities()
 
     // Read untill end.
     while not irc_reader.EndOfStream do
