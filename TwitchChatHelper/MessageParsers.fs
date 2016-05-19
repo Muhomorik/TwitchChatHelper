@@ -21,6 +21,7 @@ let parseMessage cmd =
 
     // Capabilities
     | PatternMembershipAck a -> a
+    | PatternMembershipMode a -> a
 
     /// Unknown cmd, log it and fix later.
     | _ -> Other cmd

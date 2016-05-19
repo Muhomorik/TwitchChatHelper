@@ -25,6 +25,8 @@ let PrintMsg message =
 
     // Capabilities.
     | MembershipAck a -> 
-        printColored colorInfo (sprintf "Membership ACK | %b " a)
+        printColored colorInfo (sprintf "Membership ACK | %b " a)    
+    | MembershipMode a -> 
+        printColored colorInfo (sprintf "Membership MODE | %s | %b | %s"  a.Channel a.Mode a.Username)
 
     | Other o -> printfn "Other: %s" o

@@ -19,5 +19,6 @@ type Message =
 
   // Capabilities.
   | MembershipAck of bool
+  | MembershipMode of MessageMembershipMode
 
   | Other of string  // ofr not parsed messages.

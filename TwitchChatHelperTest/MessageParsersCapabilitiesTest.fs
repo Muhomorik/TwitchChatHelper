@@ -12,57 +12,11 @@ open MessageTypesBasic
 open MessageCapabilitiesTypes
 open MessageParsers
 
-/// MODE: Someone gained or lost operator:
-/// :jtv MODE #channel +o operator_user
-type MessageMembershipMode = {
-    Channel:string    
-    /// 1: +o, 0: -o
-    Mode:bool    
-    Username:string}
-
-/// Twitch message temp
-type MessageTmp = 
-  | MembershipMode of MessageMembershipMode
-  | Other of string  // ofr not parsed messages.
-
 // Goes after: 
 // https://github.com/justintv/Twitch-API/blob/master/IRC.md#twitch-capabilities
 // Using IRCv3 capability registration, it is possible to register for Twitch-specific capabilities. The capabilities are defined below:
 
 /// RegEx for chanell messages.
-
-
-/// Converts mode string to bool value.
-/// 1: +o, 
-/// 0: -o 
-let modeToBool mode = 
-    match mode  with
-    | "+" -> true
-    | "-" -> false
-    | _ -> failwith "unknown mode"
-
-/// Pattern for membership capability ack.
-let (|PatternMembershipMode|_|) (cmd: string) =
-   let pattern_CapMembershipMode = @"^:jtv\s*MODE\s+(?<channel>#[\w]{2,24})\s*(?<mode>[\+-]{1})o\s*(?<username>[\w]{2,24})$"
-   
-   let m = Regex.Match(cmd, pattern_CapMembershipMode, RegexOptions.Compiled) 
-   match m.Success with
-   | true ->
-        let p = MembershipMode {
-            Channel = m.Groups.["channel"].Value
-            Mode = modeToBool <| m.Groups.["mode"].Value
-            Username = m.Groups.["username"].Value
-            }
-        Some(p)
-   | false -> None
-
-/// Parse message into object.
-let parseMessage2 cmd =
-    match cmd with
-    // often used commands.  
-    | PatternMembershipMode a -> a    
-    | _ -> Other cmd
-
 
 [<Test>]
 let``RecvCap: test membership ack``()=
@@ -95,7 +49,7 @@ type ``Recv: test regex membership mode`` () =
     member x.``Recv: test regex membership mode`` (testData:(string*string*bool*string)) =
         let cmd, channel, mode, username = testData
         
-        let retv_msg = parseMessage2 cmd
+        let retv_msg = parseMessage cmd
 
         match retv_msg with
         | MembershipMode m -> 

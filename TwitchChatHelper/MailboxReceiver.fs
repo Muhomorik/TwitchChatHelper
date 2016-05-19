@@ -58,6 +58,9 @@ type MailboxReceiver () =
             // Capabilities.
             | MembershipAck a -> 
                 return! messageLoop()
+            | MembershipMode a -> 
+                return! messageLoop()
+
             | Other a ->
                 do! FileLogger.LogWriteOtherAsync a // async to err file (full line), should not be many.
                 return! messageLoop()
