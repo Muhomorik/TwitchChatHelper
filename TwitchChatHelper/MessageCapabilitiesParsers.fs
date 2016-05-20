@@ -2,6 +2,7 @@
 
 open System
 open MessageTypes
+open MessageParsersBasic
 open System.Text.RegularExpressions
 
 /// Pattern for membership capability ack.
@@ -29,7 +30,7 @@ let modeToBool mode =
 
 /// Pattern for membership capability ack.
 let (|PatternMembershipMode|_|) (cmd: string) =
-   let pattern_CapMembershipMode = @"^:jtv\s*MODE\s+(?<channel>#[\w]{2,24})\s*(?<mode>[\+-]{1})o\s*(?<username>[\w]{2,24})$"
+   let pattern_CapMembershipMode = @"^:jtv\s*MODE\s+(?<channel>#[\w]{2,24})\s*(?<mode>[\+-]{1})o\s*" + pattern_twitchUsername + "$"
    
    let m = Regex.Match(cmd, pattern_CapMembershipMode, RegexOptions.Compiled) 
    match m.Success with
@@ -37,7 +38,7 @@ let (|PatternMembershipMode|_|) (cmd: string) =
         let p = MembershipMode {
             Channel = m.Groups.["channel"].Value
             Mode = modeToBool <| m.Groups.["mode"].Value
-            Username = m.Groups.["username"].Value
+            Username = m.Groups.["nickname"].Value
             }
         Some(p)
    | false -> None
