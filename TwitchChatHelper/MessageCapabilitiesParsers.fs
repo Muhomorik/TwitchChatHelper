@@ -30,7 +30,7 @@ let modeToBool mode =
 
 /// Pattern for membership capability ack.
 let (|PatternMembershipMode|_|) (cmd: string) =
-   let pattern_CapMembershipMode = @"^:jtv\s*MODE\s+(?<channel>#[\w]{2,24})\s*(?<mode>[\+-]{1})o\s*" + pattern_twitchUsername + "$"
+   let pattern_CapMembershipMode = @"^:jtv\s*MODE\s+" + pattern_channel + "\s*(?<mode>[\+-]{1})o\s*" + pattern_twitchUsername + "$"
    
    let m = Regex.Match(cmd, pattern_CapMembershipMode, RegexOptions.Compiled) 
    match m.Success with

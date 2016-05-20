@@ -67,7 +67,7 @@ let (|PatternInvalidCommand|_|) (cmd: string) =
    | false -> None
 
 [<Literal>]
-let pattern_channelJoin = @"^:" + pattern_twitchUsernameAlt + "!" + pattern_twitchUsername + "@" + pattern_twitchUsername2 + "\.tmi\.twitch\.tv\s+JOIN\s+(?<channel>#[\w]{2,24})$"
+let pattern_channelJoin = @"^:" + pattern_twitchUsernameAlt + "!" + pattern_twitchUsername + "@" + pattern_twitchUsername2 + "\.tmi\.twitch\.tv\s+JOIN\s+" + pattern_channel + "$"
 
 let (|PatternChannelJoin|_|) (cmd: string) =
    let m = Regex.Match(cmd, pattern_channelJoin, RegexOptions.Compiled) 
@@ -89,7 +89,7 @@ let (|PatternChannelJoin|_|) (cmd: string) =
 /// Twitch JOIN response with nicknames, code 353. TODO: figure out what is what.
 /// :twitch_username.tmi.twitch.tv 353 twitch_username = #channel :twitch_usernames
 [<Literal>]
-let pattern_ChanellNicknames = @"^:" + pattern_twitchUsername + "\.tmi\.twitch\.tv\s+(?<code>\w*)\s+" + pattern_twitchUsername2 + "\s+=\s+(?<channel>#\w*)\s+:(?<nicknames>[\w_\.\s]+)$"
+let pattern_ChanellNicknames = @"^:" + pattern_twitchUsername + "\.tmi\.twitch\.tv\s+(?<code>\w*)\s+" + pattern_twitchUsername2 + "\s+=\s+" + pattern_channel + "\s+:(?<nicknames>[\w_\.\s]+)$"
 
 let (|PatternChannelNicknames|_|) (cmd: string) =
    let m = Regex.Match(cmd, pattern_ChanellNicknames, RegexOptions.Compiled) 
@@ -109,7 +109,7 @@ let (|PatternChannelNicknames|_|) (cmd: string) =
 /// Twitch end of nicknames, code 366.
 /// :twitch_username.tmi.twitch.tv 366 twitch_username #channel :End of /NAMES list
 [<Literal>]
-let pattern_ChanellNicknamesEnd = @"^:(?<nameaddr>[\w]{2,24})\.tmi\.twitch\.tv\s+(?<code>\w*)\s+" + pattern_twitchUsername + "\s+(?<channel>#\w*)\s+:End of /NAMES list$"
+let pattern_ChanellNicknamesEnd = @"^:(?<nameaddr>[\w]{2,24})\.tmi\.twitch\.tv\s+(?<code>\w*)\s+" + pattern_twitchUsername + "\s+" + pattern_channel + "\s+:End of /NAMES list$"
 
 let (|PatternChannelNicknamesEnd|_|) (cmd: string) =
    let m = Regex.Match(cmd, pattern_ChanellNicknamesEnd, RegexOptions.Compiled) 
@@ -127,7 +127,7 @@ let (|PatternChannelNicknamesEnd|_|) (cmd: string) =
 /// PART: Leaving a chat room
 /// :twitch_username!twitch_username@twitch_username.tmi.twitch.tv PART #channel
 [<Literal>]
-let pattern_channelPart = @"^:" + pattern_twitchUsernameAlt + "!" + pattern_twitchUsername + "@" + pattern_twitchUsername2 + "\.tmi\.twitch\.tv\s+PART\s+(?<channel>#[\w]{2,24})$"
+let pattern_channelPart = @"^:" + pattern_twitchUsernameAlt + "!" + pattern_twitchUsername + "@" + pattern_twitchUsername2 + "\.tmi\.twitch\.tv\s+PART\s+" + pattern_channel + "$"
 
 let (|PatternChannelPart|_|) (cmd: string) =
    let m = Regex.Match(cmd, pattern_channelPart, RegexOptions.Compiled) 
@@ -148,7 +148,7 @@ let (|PatternChannelPart|_|) (cmd: string) =
 
 /// RegEx for chanell messages.
 
-let pattern_ChanellMsg = @"^:" + pattern_twitchUsernameAlt + "!" + pattern_twitchUsername + "@" + pattern_twitchUsername2 + "\.tmi\.twitch\.tv\s+PRIVMSG\s+(?<channel>#[\w]{2,24})\s*:(?<message>.*)$"
+let pattern_ChanellMsg = @"^:" + pattern_twitchUsernameAlt + "!" + pattern_twitchUsername + "@" + pattern_twitchUsername2 + "\.tmi\.twitch\.tv\s+PRIVMSG\s+" + pattern_channel + "\s*:(?<message>.*)$"
 
 let (|PatternChannelMessage|_|) (cmd: string) =
    let m = Regex.Match(cmd, pattern_ChanellMsg, RegexOptions.Compiled) 
