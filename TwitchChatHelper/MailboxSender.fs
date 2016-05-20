@@ -87,8 +87,15 @@ type MailboxSender () =
         )
 
     /// Post Pong.
+    // TODO: must deq. here or counter increasing only w/o blocking.
     static let postPong() = 
         cmdEnqueue()
+
+        // TODO: remove this ugly fix in sender.
+        let unixTime = MessageCounter.dateTimeToUnixTime DateTime.Now
+        let oldTime = MessageCounter.deadUnixTime DateTime.Now
+        cleanOld oldTime unixTime
+
         printColored colorPing "PONG"
         let irc_writer = Connection.GetWriterInstance()
         SendPong irc_writer
