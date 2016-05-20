@@ -71,7 +71,7 @@ let (|PatternChannelJoin|_|) (cmd: string) =
 /// Twitch JOIN response with nicknames, code 353. TODO: figure out what is what.
 /// :twitch_username.tmi.twitch.tv 353 twitch_username = #channel :twitch_usernames
 [<Literal>]
-let pattern_ChanellNicknames = @"^:(?<nickname>[\w]{2,24})\.tmi\.twitch\.tv\s+(?<code>\w*)\s+(?<nicknameJoin>[\w_\._]+)\s+=\s+(?<channel>#\w*)\s+:(?<nicknames>[\w_\.]+)$"
+let pattern_ChanellNicknames = @"^:(?<nickname>[\w]{2,24})\.tmi\.twitch\.tv\s+(?<code>\w*)\s+(?<nicknameJoin>[\w_\._]+)\s+=\s+(?<channel>#\w*)\s+:(?<nicknames>[\w_\.\s]+)$"
 
 let (|PatternChannelNicknames|_|) (cmd: string) =
    let m = Regex.Match(cmd, pattern_ChanellNicknames, RegexOptions.Compiled) 

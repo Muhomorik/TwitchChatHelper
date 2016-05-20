@@ -111,21 +111,31 @@ let``Recv: test regex channel Join``()=
         m.Channel |> should equal "#channel"
     | _ -> true |> should equal false
 
- 
-[<Test>]
-let``Recv: test regex channel nicknames``()=
-    let msg = ":twitch_username.tmi.twitch.tv 353 twitch_username = #channel :twitch_username"
-    let cmd = parseMessage msg
+let msg_channelNickanes1 = ":twitch_username.tmi.twitch.tv 353 twitch_username = #channel :twitch_username"
+let msg_channelNickanes2 = ":twitch_username.tmi.twitch.tv 353 twitch_username = #channel :twitch_username moobot nightbot"
 
-    match cmd with     
-    | ChannelNicknames m -> 
-        m.Nickname |> should equal "twitch_username"
-        m.Code |> should equal "353"
-        m.NicknameJoin |> should equal "twitch_username"
-        m.Channel |> should equal "#channel"
-        m.Nicknames |> should equal "twitch_username"
-    | _ -> true |> should equal false
+[<TestFixture>]
+type ``Recv: test regex channel nicknames`` () = 
+    static member TestData =
+        [|
+            [|msg_channelNickanes1, "twitch_username" , "353", "twitch_username", "#channel", "twitch_username"|];
+            [|msg_channelNickanes2, "twitch_username" , "353", "twitch_username", "#channel", "twitch_username moobot nightbot"|];
+        |]
 
+    [<TestCaseSource("TestData")>]
+    member x.``Recv: test regex channel nicknames`` (testData:(string*string*string*string*string*string)) =
+        let cmd, username, code, nicknameJoin, channel, nicknames = testData
+        
+        let cmd = parseMessage cmd
+
+        match cmd with     
+        | ChannelNicknames m -> 
+            m.Nickname |> should equal username
+            m.Code |> should equal code
+            m.NicknameJoin |> should equal nicknameJoin
+            m.Channel |> should equal channel
+            m.Nicknames |> should equal nicknames
+        | _ -> true |> should equal false
 
 [<Test>]
 let``Recv: test regex channel nicknames end``()=
