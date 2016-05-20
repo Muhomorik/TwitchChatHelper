@@ -9,7 +9,7 @@ let PrintMsg message =
     | ChanellMessage m -> 
         printfn "%*s | %s" 24 m.Nickname m.Message
     | Ping -> 
-        printfn "PING"
+        printColored colorPing "PING"
     | SuccConnection i -> 
         printfn "Info: %15s | %3s | %s | %s" i.TwitchGroup i.Code i.Nickname i.Message
     | ChannelJoin p -> 
@@ -19,7 +19,7 @@ let PrintMsg message =
     | ChannelNicknamesEnd p -> 
         printColored colorInfo (sprintf "/NAMES | %s | %3s | %s | %s" p.NameAddr p.Code p.Nickname p.Channel)
     | ChannelLeave p -> 
-        printColored colorInfo (sprintf "LEAVE | %s | %s " p.Channel p.Nickname)
+        printColored colorLeave (sprintf "LEAVE | %s | %s " p.Channel p.Nickname)
     | InvalidCommand p -> 
         printColored colorInfo (sprintf "LEAVE | %s | %s " p.Code p.Message)
 
