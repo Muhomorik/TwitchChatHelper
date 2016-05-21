@@ -33,5 +33,7 @@ type Message =
   | CommandsClearChat of MessageCommandClearChat
   
   | CommandsUserstate of MessageCommandUserstate
+  
+  | CommandsReconnect // TODO: no data for this command.
 
   | Other of string  // ofr not parsed messages.

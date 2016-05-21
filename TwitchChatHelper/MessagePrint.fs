@@ -46,6 +46,8 @@ let PrintMsg message =
         printColored colorClearChat (sprintf "Clear chat | %s " a.Channel)    
         
     | CommandsUserstate a -> 
-        printColored colorInfo (sprintf "UserState | %s " a.Channel)
+        printColored colorInfo (sprintf "UserState | %s " a.Channel)        
+    | CommandsReconnect -> 
+        printColored colorReconnect "RECONNECT"
 
     | Other o -> printfn "Other: %s" o

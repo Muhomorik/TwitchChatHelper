@@ -16,6 +16,8 @@ let colorLeave = ConsoleColor.Cyan
 let colorClearChatUser = ConsoleColor.Yellow
 let colorClearChat = ConsoleColor.Yellow
 
+let colorReconnect = ConsoleColor.Red
+
 let printColored c (s:string) = 
     let old = System.Console.ForegroundColor 
     try 

@@ -10,10 +10,6 @@ open MessageCommandsTypes
 
 /// Pattern for membership capability ack.
 let (|PatternCommandsAck|_|) (cmd: string) =
-
-   // let pattern_CapMembershipAck = @"^:tmi\.twitch\.tv CAP \* ACK :twitch\.tv/membership$"
-   // let m = Regex.Match(cmd, pattern_CapMembershipAck, RegexOptions.Compiled) 
-   // match m.Success with
    let x = String.Equals(":tmi.twitch.tv CAP * ACK :twitch.tv/commands", cmd, System.StringComparison.InvariantCultureIgnoreCase)
    
    match x with
@@ -150,3 +146,14 @@ let (|PatternCommandsUserstate|_|) (cmd: string) =
             }
         Some(p)
    | false -> None
+
+
+/// Pattern for RECONNECT. TODO no actual data on RECONNECT.
+let (|PatternCommandsReconnect|_|) (cmd: string) =
+   let x = String.Equals("RECONNECT", cmd, System.StringComparison.InvariantCultureIgnoreCase)
+   
+   match x with
+   | true ->
+        Some(CommandsReconnect)
+   | false -> None
+

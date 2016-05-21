@@ -118,3 +118,16 @@ let``RecvCap: test commands CommandsUserstate``()=
         a.TwitchGroup |> should equal "tmi.twitch.tv"       
         a.Channel |> should equal "#channel"                     
     | _ -> true |> should equal false
+
+
+[<Test>]
+let``RecvCap: test commands CommandsReconnet``()=
+    let msg = "RECONNECT" 
+    let cmd = parseMessage msg
+
+    match cmd with
+    | CommandsReconnect -> 
+        true |> should equal true                     
+    | _ -> true |> should equal false
+
+
