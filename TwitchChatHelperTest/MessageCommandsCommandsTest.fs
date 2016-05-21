@@ -96,3 +96,14 @@ let``RecvCap: test commands CommandsClearChatUser``()=
         a.Channel |> should equal "#channel"              
         a.Nickname |> should equal "twitch_username"       
     | _ -> true |> should equal false
+
+[<Test>]
+let``RecvCap: test commands CommandsClearChat``()=
+    let msg = ":tmi.twitch.tv CLEARCHAT #channel" 
+    let cmd = parseMessage msg
+
+    match cmd with
+    | CommandsClearChat a  -> 
+        a.TwitchGroup |> should equal "tmi.twitch.tv"       
+        a.Channel |> should equal "#channel"                     
+    | _ -> true |> should equal false

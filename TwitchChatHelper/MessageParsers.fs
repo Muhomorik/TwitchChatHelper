@@ -26,9 +26,12 @@ let parseMessage cmd =
     // Commands
     | PatternCommandsAck a -> a
     | PatternCommandsNotice a -> a
+    
     | PatternCommandsHostTargetStart a -> a
     | PatternCommandsHostTargetStop a -> a
+    
     | PatternCommandsClearChatUser a -> a
+    | PatternCommandsClearChat a -> a
 
     /// Unknown cmd, log it and fix later.
     | _ -> Other cmd

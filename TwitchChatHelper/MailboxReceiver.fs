@@ -71,6 +71,8 @@ type MailboxReceiver () =
             | CommandsHostTargetStop a -> 
                 return! messageLoop()
             | CommandsClearChatUser a -> 
+                return! messageLoop()            
+            | CommandsClearChat a -> 
                 return! messageLoop()
 
             // Log unknown

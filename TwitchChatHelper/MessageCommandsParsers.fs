@@ -114,3 +114,21 @@ let (|PatternCommandsClearChatUser|_|) (cmd: string) =
             }
         Some(p)
    | false -> None
+
+/// Pattern for command CLEARCHAT channel.
+/// :tmi.twitch.tv CLEARCHAT #channel
+[<Literal>]
+let pattern_CommandsClearChat =  @"^:(?<twitchGroup>[\w\.]+)\s+CLEARCHAT\s+" + pattern_channel + "$"
+// ^:(?<twitchGroup>[\w\.]+)\s+CLEARCHAT\s+(?<channel>#[\w]{2,24})$
+
+/// Pattern for CLEARCHAT channel.
+let (|PatternCommandsClearChat|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern_CommandsClearChat, RegexOptions.Compiled) 
+   match m.Success with
+   | true -> 
+        let p = CommandsClearChat {
+            TwitchGroup = m.Groups.["twitchGroup"].Value 
+            Channel = m.Groups.["channel"].Value            
+            }
+        Some(p)
+   | false -> None
