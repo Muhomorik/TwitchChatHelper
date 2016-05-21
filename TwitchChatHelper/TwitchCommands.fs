@@ -37,3 +37,8 @@ let SendPong (conn:StreamWriter) =
 let SendPongAsync (conn:StreamWriter) = async{
     do! conn.WriteLineAsync( "PONG :tmi.twitch.tv" ) |> Async.AwaitTask
     }
+
+/// Send PART (leave) to channel.
+let SendPartAsync (conn:StreamWriter)(channel:string) = async{
+    do! conn.WriteLineAsync( sprintf "PART %s" channel ) |> Async.AwaitTask
+    }

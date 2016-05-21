@@ -15,6 +15,8 @@ type TwitchCommand =
     | Login of TwitchCommandLogin*AsyncReplyChannel<bool> // TODO: as type
     | ChannelJoin of string*AsyncReplyChannel<bool>
     | ChanellMessage of ChanellMsg // same as in recv.
+    ///  Leave a channel.
+    | ChannelPart of string
 
     // Capabilities
     | ReqMembership

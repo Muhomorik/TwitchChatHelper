@@ -73,6 +73,13 @@ type MailboxSender () =
                 replyChannel.Reply(true)
                 return! messageLoop()            
             
+            | ChannelPart (channel) -> 
+                let irc_writer = Connection.GetWriterInstance()
+                
+                printfn "Part %s" channel
+                do! SendPartAsync irc_writer channel
+
+                return! messageLoop()             
             // Capabilities
             | ReqMembership -> 
                 let irc_writer = Connection.GetWriterInstance()
@@ -121,6 +128,11 @@ type MailboxSender () =
     static let postJoin (channel:string) = agent.PostAndReply(fun replyChannel -> 
         cmdEnqueue()
         ChannelJoin (channel, replyChannel))
+    
+    /// Post Part.
+    static let postPart (channel:string) = 
+        cmdEnqueue()
+        agent.Post( ChannelPart channel)
 
     //
     // Capabilities
@@ -152,7 +164,10 @@ type MailboxSender () =
     static member PostAndReplyLogin (oauth:string)(username:string) = postLogin (oauth:string)(username:string)
     
     /// Send JOIN.
-    static member PostAndReplyJoin (channel:string) = postJoin (channel:string)    
+    static member PostAndReplyJoin (channel:string) = postJoin (channel:string)     
+    
+    /// Send PART.
+    static member PostPart (channel:string) = postPart channel    
     
     /// Adds membership state event (NAMES, JOIN, PART, or MODE) functionality.
     static member PostReqCapabilities () = postReqCapabilities ()

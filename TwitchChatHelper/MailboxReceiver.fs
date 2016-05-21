@@ -53,12 +53,33 @@ type MailboxReceiver () =
             | ChannelNicknamesEnd a -> 
                 return! messageLoop()
             | ChannelLeave a -> 
+                // Leave channel when host leaves.
+                let ch = a.Channel.Replace("#", "") // Remove # from channel
+                let nick = a.NicknameAlterative
+                match ch with
+                | ch when ch = nick -> 
+                    printfn "Leave %s because host left." a.Channel
+                    MailboxSender.MailboxSender.PostPart a.Channel
+                | _ -> ()
+
                 return! messageLoop()            
             
             // Capabilities.
             | MembershipAck a -> 
                 return! messageLoop()
-            | MembershipMode a -> 
+            | MembershipMode a ->
+                // Leave channel when host loses (+) mode.
+                match a.Mode with
+                | false ->
+                    let ch = a.Channel.Replace("#", "") // Remove # from channel
+                    let nick = a.Username
+                    match ch with
+                    | ch when ch = nick -> 
+                        printfn "Leave %s because host lost mod." a.Channel
+                        MailboxSender.MailboxSender.PostPart a.Channel
+                    | _ -> () 
+                | true -> ()
+ 
                 return! messageLoop()
 
             // Commands
