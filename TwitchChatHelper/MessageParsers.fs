@@ -35,6 +35,7 @@ let parseMessage cmd =
     
     | PatternCommandsUserstate a -> a
     | PatternCommandsReconnect a -> a
+    | PatternCommandsRoomstate a -> a
 
     /// Unknown cmd, log it and fix later.
     | _ -> Other cmd

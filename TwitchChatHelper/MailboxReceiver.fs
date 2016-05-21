@@ -77,6 +77,8 @@ type MailboxReceiver () =
             | CommandsUserstate a -> 
                 return! messageLoop()            
             | CommandsReconnect -> 
+                return! messageLoop()            
+            | CommandsRoomstate a -> 
                 return! messageLoop()
 
             // Log unknown

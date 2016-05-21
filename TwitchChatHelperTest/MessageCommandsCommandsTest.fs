@@ -130,4 +130,13 @@ let``RecvCap: test commands CommandsReconnet``()=
         true |> should equal true                     
     | _ -> true |> should equal false
 
+[<Test>]
+let``RecvCap: test commands CommandsRoomstate``()=
+    let msg = ":tmi.twitch.tv ROOMSTATE #channel" 
+    let cmd = parseMessage msg
 
+    match cmd with
+    | CommandsRoomstate a  -> 
+        a.TwitchGroup |> should equal "tmi.twitch.tv"       
+        a.Channel |> should equal "#channel"                     
+    | _ -> true |> should equal false

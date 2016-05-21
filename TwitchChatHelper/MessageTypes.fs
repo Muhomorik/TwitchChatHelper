@@ -35,5 +35,7 @@ type Message =
   | CommandsUserstate of MessageCommandUserstate
   
   | CommandsReconnect // TODO: no data for this command.
+  
+  | CommandsRoomstate of MessageCommandRoomstate
 
   | Other of string  // ofr not parsed messages.

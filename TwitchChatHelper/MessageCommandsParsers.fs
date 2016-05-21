@@ -157,3 +157,20 @@ let (|PatternCommandsReconnect|_|) (cmd: string) =
         Some(CommandsReconnect)
    | false -> None
 
+/// Pattern for command ROOMSTATE.
+/// :tmi.twitch.tv ROOMSTATE #channel
+[<Literal>]
+let pattern_CommandsRoomstate =  @"^:(?<twitchGroup>[\w\.]+)\s+ROOMSTATE\s+" + pattern_channel + "$"
+// ^:(?<twitchGroup>[\w\.]+)\s+ROOMSTATE\s+(?<channel>#[\w]{2,24})$
+
+/// Pattern for CLEARCHAT channel.
+let (|PatternCommandsRoomstate|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern_CommandsRoomstate, RegexOptions.Compiled) 
+   match m.Success with
+   | true -> 
+        let p = CommandsRoomstate {
+            TwitchGroup = m.Groups.["twitchGroup"].Value 
+            Channel = m.Groups.["channel"].Value            
+            }
+        Some(p)
+   | false -> None

@@ -60,3 +60,10 @@ type MessageCommandClearChat = {
 type MessageCommandUserstate = {
     TwitchGroup :string
     Channel :string}
+
+/// ROOMSTATE
+/// Use with tags CAP. See ROOMSTATE tags.
+/// :tmi.twitch.tv ROOMSTATE #channel
+type MessageCommandRoomstate = {
+    TwitchGroup :string
+    Channel :string}

@@ -48,6 +48,8 @@ let PrintMsg message =
     | CommandsUserstate a -> 
         printColored colorInfo (sprintf "UserState | %s " a.Channel)        
     | CommandsReconnect -> 
-        printColored colorReconnect "RECONNECT"
-
+        printColored colorReconnect "RECONNECT"   
+    | CommandsRoomstate a -> 
+        printColored colorInfo (sprintf "ROOMSTATE | %s " a.Channel) 
+    
     | Other o -> printfn "Other: %s" o
