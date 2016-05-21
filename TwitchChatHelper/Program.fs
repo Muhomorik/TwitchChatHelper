@@ -43,6 +43,8 @@ let processOneLine (ircReader:StreamReader)(logFile :string) =
         match msg with 
         | ChanellMessage message ->              
             FileLogger.LogMessageAsync logFile message.Message |> Async.RunSynchronously
+        | CommandsNotice message ->              
+            FileLogger.LogMessageAsync "notice.txt" msg_string |> Async.RunSynchronously        
         | _ -> ()
         
 
