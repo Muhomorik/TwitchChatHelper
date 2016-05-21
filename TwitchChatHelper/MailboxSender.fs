@@ -80,6 +80,15 @@ type MailboxSender () =
                 printfn "Req Capabilities"
                 do! SendCapabilitiesMembershipAsyns irc_writer
 
+                return! messageLoop()            
+            
+            // Commands
+            | ReqCommands -> 
+                let irc_writer = Connection.GetWriterInstance()
+                
+                printfn "Req Commands"
+                do! SendCapabilitiesCommandsAsyns irc_writer
+
                 return! messageLoop()
             }
 
@@ -116,8 +125,18 @@ type MailboxSender () =
     //
     // Capabilities
     //
-    static let postReqCapabilities () = agent.Post( ReqMembership )
+    
+    static let postReqCapabilities () = 
+        cmdEnqueue()
+        agent.Post( ReqMembership )
 
+    //
+    // Commands
+    //
+
+    static let postReqCommands () = 
+        cmdEnqueue()
+        agent.Post( ReqCommands )
 
     //
     // Hide implementation.
@@ -135,5 +154,8 @@ type MailboxSender () =
     /// Send JOIN.
     static member PostAndReplyJoin (channel:string) = postJoin (channel:string)    
     
-    /// Send Capabilities request.
+    /// Adds membership state event (NAMES, JOIN, PART, or MODE) functionality.
     static member PostReqCapabilities () = postReqCapabilities ()
+    
+    /// Enables USERSTATE, GLOBALUSERSTATE, ROOMSTATE, HOSTTARGET, NOTICE and CLEARCHAT raw commands.
+    static member PostReqCommands () = postReqCommands ()

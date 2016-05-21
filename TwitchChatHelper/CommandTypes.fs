@@ -18,3 +18,6 @@ type TwitchCommand =
 
     // Capabilities
     | ReqMembership
+    
+    // Commands
+    | ReqCommands
