@@ -32,6 +32,8 @@ let parseMessage cmd =
     
     | PatternCommandsClearChatUser a -> a
     | PatternCommandsClearChat a -> a
+    
+    | PatternCommandsUserstate a -> a
 
     /// Unknown cmd, log it and fix later.
     | _ -> Other cmd

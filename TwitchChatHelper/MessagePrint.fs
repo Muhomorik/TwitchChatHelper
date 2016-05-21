@@ -43,6 +43,9 @@ let PrintMsg message =
     | CommandsClearChatUser a -> 
         printColored colorClearChatUser (sprintf "Clear chat | %s | %s" a.Channel a.Nickname)    
     | CommandsClearChat a -> 
-        printColored colorClearChat (sprintf "Clear chat | %s " a.Channel)
+        printColored colorClearChat (sprintf "Clear chat | %s " a.Channel)    
+        
+    | CommandsUserstate a -> 
+        printColored colorInfo (sprintf "UserState | %s " a.Channel)
 
     | Other o -> printfn "Other: %s" o

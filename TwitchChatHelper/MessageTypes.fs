@@ -31,5 +31,7 @@ type Message =
   
   | CommandsClearChatUser of MessageCommandClearchatUser
   | CommandsClearChat of MessageCommandClearChat
+  
+  | CommandsUserstate of MessageCommandUserstate
 
   | Other of string  // ofr not parsed messages.

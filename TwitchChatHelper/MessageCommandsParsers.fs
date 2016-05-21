@@ -132,3 +132,21 @@ let (|PatternCommandsClearChat|_|) (cmd: string) =
             }
         Some(p)
    | false -> None
+
+/// Pattern for command USERSTATE.
+/// :tmi.twitch.tv CLEARCHAT #channel
+[<Literal>]
+let pattern_CommandsUserstate =  @"^:(?<twitchGroup>[\w\.]+)\s+USERSTATE\s+" + pattern_channel + "$"
+// ^:(?<twitchGroup>[\w\.]+)\s+USERSTATE\s+(?<channel>#[\w]{2,24})$
+
+/// Pattern for CLEARCHAT channel.
+let (|PatternCommandsUserstate|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern_CommandsUserstate, RegexOptions.Compiled) 
+   match m.Success with
+   | true -> 
+        let p = CommandsUserstate {
+            TwitchGroup = m.Groups.["twitchGroup"].Value 
+            Channel = m.Groups.["channel"].Value            
+            }
+        Some(p)
+   | false -> None
