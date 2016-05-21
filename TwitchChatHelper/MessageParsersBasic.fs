@@ -50,6 +50,7 @@ let (|PatternPing|_|) (cmd: string) =
    | false -> None
 
 /// RegEx for invalid command.
+// TODO: replace WHO with regex :)
 [<Literal>]
 let pattern_invalidCommand =  @"^:(?<twitchGroup>[\w\.]+)\s+(?<code>\d+)\s+" + pattern_twitchUsername + "\s+WHO\s*:(?<message>.*)"
 

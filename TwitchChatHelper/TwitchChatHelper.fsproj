@@ -68,6 +68,7 @@
     <Compile Include="MessageParsers.fs" />
     <Compile Include="TwitchCommands.fs" />
     <Compile Include="TwitchCommandsCapabilities.fs" />
+    <Compile Include="TwitchCommandsCommandsCapabilities.fs" />
     <Compile Include="MessagePrint.fs" />
     <Compile Include="FileLogger.fs" />
     <Compile Include="CliArguments.fs" />

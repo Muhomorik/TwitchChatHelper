@@ -17,4 +17,4 @@ type TwitchCommand =
     | ChanellMessage of ChanellMsg // same as in recv.
 
     // Capabilities
-    | Membership
+    | ReqMembership

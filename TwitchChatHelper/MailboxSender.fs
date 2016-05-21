@@ -6,6 +6,7 @@ open System.Collections.Concurrent
 open ConsoleOutHelpers
 open TwitchCommands
 open TwitchCommandsCapabilities
+open TwitchCommandsCommandsCapabilities
 open CommandTypes
 
 // Mailbox that sends messages to twitter.
@@ -73,7 +74,7 @@ type MailboxSender () =
                 return! messageLoop()            
             
             // Capabilities
-            | Membership -> 
+            | ReqMembership -> 
                 let irc_writer = Connection.GetWriterInstance()
                 
                 printfn "Req Capabilities"
@@ -115,7 +116,7 @@ type MailboxSender () =
     //
     // Capabilities
     //
-    static let postCapabilities () = agent.Post( Membership )
+    static let postReqCapabilities () = agent.Post( ReqMembership )
 
 
     //
@@ -135,4 +136,4 @@ type MailboxSender () =
     static member PostAndReplyJoin (channel:string) = postJoin (channel:string)    
     
     /// Send Capabilities request.
-    static member PostCapabilities () = postCapabilities ()
+    static member PostReqCapabilities () = postReqCapabilities ()
