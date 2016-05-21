@@ -179,7 +179,7 @@ let msg_msg1 = ":twitch_username!twitch_username@twitch_username.tmi.twitch.tv P
 let msg_en = ":nickname!nickname@nickname.tmi.twitch.tv PRIVMSG #gamer2 :So is this the stream with giveaways?"
 // Test russian locale.
 let msg_ru = ":nightbot!nightbot@nightbot.tmi.twitch.tv PRIVMSG #lady__angel :хочешь порадовать девушку или выразить благодарность"
-
+let msg_longnick = ":another_one_forget_latest!another_one_forget_latest@another_one_forget_latest.tmi.twitch.tv PRIVMSG #channel :Rules"
 // TODO: find and test nickname with alternative.
 
 [<TestFixture>]
@@ -189,6 +189,7 @@ type ``Recv: test regex channel message`` () =
             [|msg_msg1, "twitch_username" , "twitch_username", "#channel", "message here"|];
             [|msg_en, "nickname" , "nickname", "#gamer2", "So is this the stream with giveaways?"|];
             [|msg_ru, "nightbot" , "nightbot", "#lady__angel", "хочешь порадовать девушку или выразить благодарность"|];
+            [|msg_longnick, "another_one_forget_latest" , "another_one_forget_latest", "#channel", "Rules"|];
         |]
 
     [<TestCaseSource("TestData")>]
