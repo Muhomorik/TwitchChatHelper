@@ -60,8 +60,8 @@ let (|PatternCommandsNotice|_|) (cmd: string) =
 /// Pattern for command Host starts message:.
 /// :tmi.twitch.tv HOSTTARGET #hosting_channel :target_channel [number].
 [<Literal>]
-let pattern_CommandsHostTargetStart =  @"^:(?<twitchGroup>[\w\.]+)\s+HOSTTARGET\s+" + pattern_channel + "\s+:" + pattern_channel2 + "\s(?<number>\d)$"
-// ^:(?<twitchGroup>[\w\.]+)\s+HOSTTARGET\s+(?<channel>#[\w]{2,24})\s+:(?<channel1>#[\w]{2,24})\s(?<number>\d)$
+let pattern_CommandsHostTargetStart =  @"^:(?<twitchGroup>[\w\.]+)\s+HOSTTARGET\s+" + pattern_channel + "\s+:" + pattern_channel2 + "\s(?<number>\d+)$"
+// ^:(?<twitchGroup>[\w\.]+)\s+HOSTTARGET\s+(?<channel>#[\w]{2,24})\s+:(?<channel1>#[\w]{2,24})\s(?<number>\d+)$
 
 /// Pattern for command Host starts message:.
 let (|PatternCommandsHostTargetStart|_|) (cmd: string) =
@@ -72,6 +72,25 @@ let (|PatternCommandsHostTargetStart|_|) (cmd: string) =
             TwitchGroup = m.Groups.["twitchGroup"].Value 
             ChannelHosting = m.Groups.["channel"].Value
             ChannelTarget= m.Groups.["channel_2"].Value 
+            Number = m.Groups.["number"].Value           
+            }
+        Some(p)
+   | false -> None
+
+/// Pattern for command Host stop message.
+/// :tmi.twitch.tv HOSTTARGET #hosting_channel :- [number]
+[<Literal>]
+let pattern_CommandsHostTargetStop =  @"^:(?<twitchGroup>[\w\.]+)\s+HOSTTARGET\s+" + pattern_channel + "\s+:\-\s+(?<number>\d+)$"
+// ^:(?<twitchGroup>[\w\.]+)\s+HOSTTARGET\s+(?<channel>#[\w]{2,24})\s+:\-\s+(?<number>\d+)$
+
+/// Pattern for command Host stop message.
+let (|PatternCommandsHostTargetStop|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern_CommandsHostTargetStop, RegexOptions.Compiled) 
+   match m.Success with
+   | true -> 
+        let p = CommandsHostTargetStop {
+            TwitchGroup = m.Groups.["twitchGroup"].Value 
+            ChannelHosting = m.Groups.["channel"].Value 
             Number = m.Groups.["number"].Value           
             }
         Some(p)

@@ -35,6 +35,8 @@ let PrintMsg message =
     | CommandsNotice a -> 
         printColored colorInfo (sprintf "Notice | %s " a.Message)    
     | CommandsHostTargetStart a -> 
-        printColored colorInfo (sprintf "HOSTTARGET | Hosting: %s | Target: %s | Viewvers: %s" a.ChannelHosting a.ChannelTarget a.Number)
+        printColored colorInfo (sprintf "HOSTTARGET Start | Hosting: %s | Target: %s | Viewvers: %s" a.ChannelHosting a.ChannelTarget a.Number)
+    | CommandsHostTargetStop a -> 
+        printColored colorInfo (sprintf "HOSTTARGET Stop| Hosting: %s | Viewvers: %s" a.ChannelHosting a.Number)
 
     | Other o -> printfn "Other: %s" o

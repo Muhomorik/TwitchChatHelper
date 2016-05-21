@@ -83,7 +83,7 @@ let main argv =
     
     // TODO: from cli
     MailboxSender.PostReqCapabilities()
-    //MailboxSender.PostReqCommands()
+    MailboxSender.PostReqCommands()
 
     // Read untill end.
     while not irc_reader.EndOfStream do

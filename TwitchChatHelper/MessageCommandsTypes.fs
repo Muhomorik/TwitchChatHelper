@@ -34,3 +34,10 @@ type MessageCommandHostTargetStart = {
     ChannelHosting:string 
     ChannelTarget:string 
     Number :string}
+
+/// Host stops message.
+/// :tmi.twitch.tv HOSTTARGET #hosting_channel :- [number]
+type MessageCommandHostTargetStop = {
+    TwitchGroup :string
+    ChannelHosting:string 
+    Number :string}

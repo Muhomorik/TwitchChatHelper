@@ -67,6 +67,8 @@ type MailboxReceiver () =
             | CommandsNotice a -> 
                 return! messageLoop()            
             | CommandsHostTargetStart a -> 
+                return! messageLoop()            
+            | CommandsHostTargetStop a -> 
                 return! messageLoop()
 
             // Log unknown
