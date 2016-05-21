@@ -41,3 +41,10 @@ type MessageCommandHostTargetStop = {
     TwitchGroup :string
     ChannelHosting:string 
     Number :string}
+
+/// Username is timed out on channel:
+/// :tmi.twitch.tv CLEARCHAT #channel :twitch_username
+type MessageCommandClearchatUser = {
+    TwitchGroup :string
+    Channel :string 
+    Nickname :string}

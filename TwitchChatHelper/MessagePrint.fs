@@ -37,6 +37,8 @@ let PrintMsg message =
     | CommandsHostTargetStart a -> 
         printColored colorInfo (sprintf "HOSTTARGET Start | Hosting: %s | Target: %s | Viewvers: %s" a.ChannelHosting a.ChannelTarget a.Number)
     | CommandsHostTargetStop a -> 
-        printColored colorInfo (sprintf "HOSTTARGET Stop| Hosting: %s | Viewvers: %s" a.ChannelHosting a.Number)
+        printColored colorInfo (sprintf "HOSTTARGET Stop| Hosting: %s | Viewvers: %s" a.ChannelHosting a.Number)    
+    | CommandsClearChatUser a -> 
+        printColored colorClearChatUser (sprintf "Clear chat | %s | %s" a.Channel a.Nickname)
 
     | Other o -> printfn "Other: %s" o

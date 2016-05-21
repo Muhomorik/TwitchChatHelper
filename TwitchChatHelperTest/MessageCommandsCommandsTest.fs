@@ -84,3 +84,15 @@ let``RecvCap: test commands Hostarget stop``()=
         a.ChannelHosting |> should equal "#hosting_channel"              
         a.Number |> should equal "100"       
     | _ -> true |> should equal false
+
+[<Test>]
+let``RecvCap: test commands CommandsClearChatUser``()=
+    let msg = ":tmi.twitch.tv CLEARCHAT #channel :twitch_username" 
+    let cmd = parseMessage msg
+
+    match cmd with
+    | CommandsClearChatUser a  -> 
+        a.TwitchGroup |> should equal "tmi.twitch.tv"       
+        a.Channel |> should equal "#channel"              
+        a.Nickname |> should equal "twitch_username"       
+    | _ -> true |> should equal false

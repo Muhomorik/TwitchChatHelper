@@ -22,7 +22,7 @@ let (|PatternCommandsAck|_|) (cmd: string) =
         Some(p)
    | false -> None
 
-
+/// Parse mgg-id to enum
 let parseMsgId (msgString :string) =
     match msgString with
     | "subs_on"     -> MsgId.SubsOn
@@ -92,6 +92,25 @@ let (|PatternCommandsHostTargetStop|_|) (cmd: string) =
             TwitchGroup = m.Groups.["twitchGroup"].Value 
             ChannelHosting = m.Groups.["channel"].Value 
             Number = m.Groups.["number"].Value           
+            }
+        Some(p)
+   | false -> None
+
+/// Pattern for command CLEARCHAT user.
+/// :tmi.twitch.tv CLEARCHAT #channel :twitch_username
+[<Literal>]
+let pattern_CommandsClearChatUser =  @"^:(?<twitchGroup>[\w\.]+)\s+CLEARCHAT\s+" + pattern_channel + "\s+:" + pattern_twitchUsername + "$"
+// ^:(?<twitchGroup>[\w\.]+)\s+CLEARCHAT\s+(?<channel>#[\w]{2,24})\s+:(?<nickname>[\w_\.]+)$
+
+/// Pattern for  CLEARCHAT user.
+let (|PatternCommandsClearChatUser|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern_CommandsClearChatUser, RegexOptions.Compiled) 
+   match m.Success with
+   | true -> 
+        let p = CommandsClearChatUser {
+            TwitchGroup = m.Groups.["twitchGroup"].Value 
+            Channel = m.Groups.["channel"].Value 
+            Nickname = m.Groups.["nickname"].Value           
             }
         Some(p)
    | false -> None
