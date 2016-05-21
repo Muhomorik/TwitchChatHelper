@@ -80,7 +80,7 @@ let main argv =
     MailboxSender.PostAndReplyJoin channel |> ignore // must wait for result.
     
     // TODO: from cli
-    MailboxSender.PostCapabilities()
+    MailboxSender.PostReqCapabilities()
 
     // Read untill end.
     while not irc_reader.EndOfStream do

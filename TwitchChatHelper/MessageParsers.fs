@@ -3,7 +3,7 @@
 open MessageTypes
 open MessageParsersBasic
 open MessageCapabilitiesParsers
-
+open MessageCommandsParsers
 
 /// Parse message into object.
 let parseMessage cmd =
@@ -22,6 +22,9 @@ let parseMessage cmd =
     // Capabilities
     | PatternMembershipAck a -> a
     | PatternMembershipMode a -> a
+
+    // Commands
+    | PatternCommandsAck a -> a
 
     /// Unknown cmd, log it and fix later.
     | _ -> Other cmd

@@ -61,10 +61,12 @@
     <Compile Include="ConsoleOutHelpers.fs" />
     <Compile Include="MessageTypesBasic.fs" />
     <Compile Include="MessageCapabilitiesTypes.fs" />
+    <Compile Include="MessageCommandsTypes.fs" />
     <Compile Include="MessageTypes.fs" />
     <Compile Include="CommandTypes.fs" />
     <Compile Include="MessageParsersBasic.fs" />
     <Compile Include="MessageCapabilitiesParsers.fs" />
+    <Compile Include="MessageCommandsParsers.fs" />
     <Compile Include="MessageParsers.fs" />
     <Compile Include="TwitchCommands.fs" />
     <Compile Include="TwitchCommandsCapabilities.fs" />

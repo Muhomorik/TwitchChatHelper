@@ -21,4 +21,7 @@ type Message =
   | MembershipAck of bool
   | MembershipMode of MessageMembershipMode
 
+  // Commands
+  | CommandsAck of bool
+
   | Other of string  // ofr not parsed messages.

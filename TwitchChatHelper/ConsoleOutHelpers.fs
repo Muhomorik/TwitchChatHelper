@@ -3,7 +3,9 @@
 open System
 
 let colorInfo = ConsoleColor.DarkYellow
+
 let colorReq = ConsoleColor.Green
+let colorReqAck = ConsoleColor.Green
 
 let colorPing = ConsoleColor.DarkMagenta
 let colorPong = ConsoleColor.DarkMagenta
