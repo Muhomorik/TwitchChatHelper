@@ -31,6 +31,8 @@ let PrintMsg message =
 
     // Commands
     | CommandsAck a -> 
-        printColored colorReqAck (sprintf "Req Commands ACK | %b " a)
+        printColored colorReqAck (sprintf "Req Commands ACK | %b " a)    
+    | CommandsNotice a -> 
+        printColored colorInfo (sprintf "Notice | %s " a.Message)
 
     | Other o -> printfn "Other: %s" o

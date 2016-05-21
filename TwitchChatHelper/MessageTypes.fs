@@ -4,6 +4,7 @@
 
 open MessageTypesBasic
 open MessageCapabilitiesTypes
+open MessageCommandsTypes
 
 /// Twitch message
 type Message = 
@@ -23,5 +24,6 @@ type Message =
 
   // Commands
   | CommandsAck of bool
+  | CommandsNotice of MessageCommandNotice
 
   | Other of string  // ofr not parsed messages.
