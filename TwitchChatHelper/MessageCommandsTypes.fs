@@ -26,3 +26,11 @@ type MessageCommandNotice = {
     TwitchGroup :string
     Channel:string 
     Message :string}
+
+/// Host starts message.
+/// :tmi.twitch.tv HOSTTARGET #hosting_channel :target_channel [number]
+type MessageCommandHostTargetStart = {
+    TwitchGroup :string
+    ChannelHosting:string 
+    ChannelTarget:string 
+    Number :string}

@@ -25,5 +25,6 @@ type Message =
   // Commands
   | CommandsAck of bool
   | CommandsNotice of MessageCommandNotice
+  | CommandsHostTargetStart of MessageCommandHostTargetStart
 
   | Other of string  // ofr not parsed messages.

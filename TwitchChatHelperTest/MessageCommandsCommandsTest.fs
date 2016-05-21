@@ -55,3 +55,18 @@ type ``Recv: test parse command notice`` () =
             m.Message |> should equal message
         | _ -> 
             true |> should equal false
+
+[<Test>]
+let``RecvCap: test commands Hostarget start``()=
+    let msg = ":tmi.twitch.tv HOSTTARGET #hosting_channel :#target_channel 1" 
+    // TODO: start number i prel. no real data.
+    // TODO: check hasthag for target channel.
+    let cmd = parseMessage msg
+
+    match cmd with
+    | CommandsHostTargetStart a  -> 
+        a.TwitchGroup |> should equal "tmi.twitch.tv"       
+        a.ChannelHosting |> should equal "#hosting_channel"       
+        a.ChannelTarget |> should equal "#target_channel"       
+        a.Number |> should equal "1"       
+    | _ -> true |> should equal false

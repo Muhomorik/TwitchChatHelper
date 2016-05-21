@@ -26,6 +26,7 @@ let parseMessage cmd =
     // Commands
     | PatternCommandsAck a -> a
     | PatternCommandsNotice a -> a
+    | PatternCommandsHostTargetStart a -> a
 
     /// Unknown cmd, log it and fix later.
     | _ -> Other cmd

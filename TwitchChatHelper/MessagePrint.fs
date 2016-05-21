@@ -33,6 +33,8 @@ let PrintMsg message =
     | CommandsAck a -> 
         printColored colorReqAck (sprintf "Req Commands ACK | %b " a)    
     | CommandsNotice a -> 
-        printColored colorInfo (sprintf "Notice | %s " a.Message)
+        printColored colorInfo (sprintf "Notice | %s " a.Message)    
+    | CommandsHostTargetStart a -> 
+        printColored colorInfo (sprintf "HOSTTARGET | Hosting: %s | Target: %s | Viewvers: %s" a.ChannelHosting a.ChannelTarget a.Number)
 
     | Other o -> printfn "Other: %s" o

@@ -18,8 +18,14 @@ let pattern_twitchUsername2 =  @"(?<nickname2>[\w_\.]+)"
 let pattern_twitchUsernameAlt =  @"(?<nicknameAlt>[\w_\.]+)"
 
 /// Twitch channel pattern.
+/// Geoup name: channel
 [<Literal>]
 let pattern_channel =  @"(?<channel>#[\w]{2,24})"
+
+/// Twitch channel pattern. For second match in string.
+/// Geoup name: channel_2
+[<Literal>]
+let pattern_channel2 =  @"(?<channel_2>#[\w]{2,24})"
 
 /// RegEx for successful connection message.
 [<Literal>]
