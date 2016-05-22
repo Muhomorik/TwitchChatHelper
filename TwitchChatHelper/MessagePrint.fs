@@ -13,11 +13,11 @@ let PrintMsg message =
     | SuccConnection i -> 
         printfn "Info: %15s | %3s | %s | %s" i.TwitchGroup i.Code i.Nickname i.Message
     | ChannelJoin p -> 
-        printColored colorJoin (sprintf "JOIN | %s | %s | %s" p.Nickname p.NicknameAlterative p.Channel)
+        printColored colorJoin (sprintf "JOIN | %s | %s | %s" p.Channel p.NicknameAlterative p.Nickname  )
     | ChannelNicknames p -> 
-        printColored colorInfo (sprintf "Nicknames | %s | %3s | %s | %s | %s" p.Nickname p.Code p.NicknameJoin p.Channel p.Nicknames)
+        printColored colorInfo (sprintf "Nicknames | %s | %3s | %s | %s | %s" p.Channel  p.Nickname p.Code p.NicknameJoin p.Nicknames)
     | ChannelNicknamesEnd p -> 
-        printColored colorInfo (sprintf "/NAMES | %s | %3s | %s | %s" p.NameAddr p.Code p.Nickname p.Channel)
+        printColored colorInfo (sprintf "/NAMES | %s | %3s | %s | %s" p.Channel p.NameAddr p.Code p.Nickname )
     | ChannelLeave p -> 
         printColored colorLeave (sprintf "LEAVE | %s | %s " p.Channel p.Nickname)
     | InvalidCommand p -> 
