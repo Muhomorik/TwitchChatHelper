@@ -26,7 +26,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Debug\TwitchChatHelper.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
-    <StartArguments>--filelog twitch_msg_log.txt --channel #starladder_cs_en</StartArguments>
+    <StartArguments>--filelog twitch_msg_log.txt --channel #quickybaby</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -76,6 +76,7 @@
     <Compile Include="CliArguments.fs" />
     <Compile Include="Connection.fs" />
     <Compile Include="MessageCounter.fs" />
+    <Compile Include="MailboxLogger.fs" />
     <Compile Include="MailboxSender.fs" />
     <Compile Include="MailboxReceiver.fs" />
     <Compile Include="Program.fs" />

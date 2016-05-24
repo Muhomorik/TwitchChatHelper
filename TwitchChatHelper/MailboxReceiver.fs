@@ -36,7 +36,7 @@ type MailboxReceiver () =
             // Process based on message type.
             match msg with 
             | ChanellMessage message ->              
-                /// TODO: handle message.
+                MailboxLogger.MailboxLogger.PostMessage msg
                 return! messageLoop()
             | SuccConnection a-> 
                 return! messageLoop()

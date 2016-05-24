@@ -60,6 +60,7 @@
     <Compile Include="MessageParsersCapabilitiesTest.fs" />
     <Compile Include="MessageCommandsCommandsTest.fs" />
     <Compile Include="MessageCounterTest.fs" />
+    <Compile Include="ConcurrentLogSettingsTest.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />

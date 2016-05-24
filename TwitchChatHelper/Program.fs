@@ -39,10 +39,8 @@ let processOneLine (ircReader:StreamReader)(logFile :string) =
         printStats() // TODO: better print. Remake.
 
         // TODO: this should be lgged inside the mailbox. But there is now way to send log file as parameter.
-        // Alt is to dynnamically create file with tules there (like chan name).
+        // Alt is to dynnamically create file with rules there (like chan name).
         match msg with 
-        | ChanellMessage message ->              
-            FileLogger.LogMessageAsync logFile message.Message |> Async.RunSynchronously
         | CommandsNotice message ->              
             FileLogger.LogMessageAsync "notice.txt" msg_string |> Async.RunSynchronously        
         | _ -> ()
@@ -74,6 +72,9 @@ let main argv =
     /// Channel from cli or console.
     let channel = results   |> parseChannel
                             |> ReadChannelFromConsole 
+
+    /// Add to log settings. TODO: kind of ugly.
+    MailboxLogger.SettingsChannel.Add channel logFile
 
     let irc_reader = Connection.GetReaderInstance()
 
