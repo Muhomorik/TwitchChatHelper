@@ -17,7 +17,7 @@ Note to myself:
 
 # Workign on #
 
-- More agents!
+- More agents! (MailboxProcessor so far, move to Akka.Net when structure is known).
 - Move things to own projects
 - Message of Tags
 
@@ -82,6 +82,7 @@ Currently builds with no parameters - program exits.
 ## TODO ##
 
 - [ ] Config: nickname, oauth login to settings file (or smth)
+- [ ] Save login details and channel for Reconnect.
 - [ ] Floating window message/pm counter, avoid bans.
 
 
