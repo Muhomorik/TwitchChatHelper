@@ -28,22 +28,30 @@ let printStats() =
 
 /// Process one read from input stream.
 let processOneLine (ircReader:StreamReader)(logFile :string) = 
-    let msg_string = ircReader.ReadLine()
+    try    
+        let msg_string = ircReader.ReadLine()
     
-    match msg_string with
-    | null -> () /// wtf?
-    | _ -> 
-        let msg = parseMessage msg_string
-        PrintMsg msg        
-        MailboxReceiver.MailboxReceiver.PostMessage msg
-        printStats() // TODO: better print. Remake.
+        match msg_string with
+        | null -> () /// wtf?
+        | _ -> 
+            let msg = parseMessage msg_string
+            PrintMsg msg        
+            MailboxReceiver.MailboxReceiver.PostMessage msg
+            printStats() // TODO: better print. Remake.
 
-        // TODO: remove. Temp logger to find commands that  are missing in manual.
-        match msg with 
-        | CommandsNotice message ->              
-            FileLogger.LogMessageAsync "notice.txt" msg_string |> Async.RunSynchronously        
-        | _ -> ()
-        
+            // TODO: remove. Temp logger to find commands that  are missing in manual.
+            match msg with 
+            | CommandsNotice message ->              
+                FileLogger.LogMessageAsync "notice.txt" msg_string |> Async.RunSynchronously        
+            | _ -> ()
+    with
+        | :? IOException as ex ->
+            printfn "Got IOException. Reconecting to the network..."
+            ircReader.Close()            
+            System.Threading.Thread.Sleep 1000
+        | _ ->                 
+            // don't handle any other cases 
+            reraise()         
 
 
 // big chans problem
