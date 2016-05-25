@@ -38,8 +38,7 @@ let processOneLine (ircReader:StreamReader)(logFile :string) =
         MailboxReceiver.MailboxReceiver.PostMessage msg
         printStats() // TODO: better print. Remake.
 
-        // TODO: this should be lgged inside the mailbox. But there is now way to send log file as parameter.
-        // Alt is to dynnamically create file with rules there (like chan name).
+        // TODO: remove. Temp logger to find commands that  are missing in manual.
         match msg with 
         | CommandsNotice message ->              
             FileLogger.LogMessageAsync "notice.txt" msg_string |> Async.RunSynchronously        

@@ -15,6 +15,8 @@ Note to myself:
 
 **DateTime.Now** is used internally everywhere.
 
+Tested it on CS channel with 50k+ viewers and it works nice.
+
 # Workign on #
 
 - More agents! (MailboxProcessor so far, move to Akka.Net when structure is known).
