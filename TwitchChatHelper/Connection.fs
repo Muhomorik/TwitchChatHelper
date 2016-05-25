@@ -51,13 +51,14 @@ let private ircReader = Lazy.Create(fun() ->
 /// StreamReader instance. 
 let GetReaderInstance() = ircReader.Value
 
-// TODO: as option.
 /// StreamWriter initialization.
 let private ircWriter = Lazy.Create(fun() -> 
-    let conn = GetConnInstance()
-    let sr = new StreamWriter( conn.Value.GetStream() )
-    sr.AutoFlush <- true
-    sr)
+    let conn = GetConnInstance() |> Option.map (fun conn ->
+        let sr = new StreamWriter( conn.GetStream() )
+        sr.AutoFlush <- true
+        sr)
+    conn
+    )
 
 /// StreamWriter instance. 
 let GetWriterInstance() = ircWriter.Value

@@ -55,20 +55,22 @@ type MailboxSender () =
                 return! messageLoop()
             
             | Login (lg, replyChannel) -> 
-                let irc_writer = Connection.GetWriterInstance()
-
-                printfn "Login"
-                SendPass irc_writer lg.Oauth
-                SendNick irc_writer lg.Username
-                
+                Connection.GetWriterInstance() |> Option.map (fun irc_writer -> 
+                    printfn "Login"
+                    SendPass irc_writer lg.Oauth
+                    SendNick irc_writer lg.Username
+                ) |> ignore
                 replyChannel.Reply(true)
                 return! messageLoop()
             
             | ChannelJoin (channel, replyChannel) -> 
                 let irc_writer = Connection.GetWriterInstance()
                 
-                printfn "Join %s" channel
-                do! SendJoinAsync irc_writer channel
+                match irc_writer with
+                | Some ircWriter ->
+                    printfn "Join %s" channel                    
+                    do! SendJoinAsync ircWriter channel
+                | None -> printfn "Skip Join %s" channel
 
                 replyChannel.Reply(true)
                 return! messageLoop()            
@@ -76,25 +78,34 @@ type MailboxSender () =
             | ChannelPart (channel) -> 
                 let irc_writer = Connection.GetWriterInstance()
                 
-                printfn "Part %s" channel
-                do! SendPartAsync irc_writer channel
-
+                match irc_writer with
+                | Some ircWriter ->
+                    printfn "Part %s" channel
+                    do! SendPartAsync ircWriter channel
+                | None -> printfn "Skip Part %s" channel
+                
                 return! messageLoop()             
             // Capabilities
             | ReqMembership -> 
                 let irc_writer = Connection.GetWriterInstance()
+                 
+                match irc_writer with
+                | Some ircWriter ->
+                    printfn "Req Capabilities"
+                    do! SendCapabilitiesMembershipAsyns ircWriter
+                | None -> printfn "Skip Req Capabilities"                
                 
-                printfn "Req Capabilities"
-                do! SendCapabilitiesMembershipAsyns irc_writer
-
                 return! messageLoop()            
             
             // Commands
             | ReqCommands -> 
                 let irc_writer = Connection.GetWriterInstance()
                 
-                printfn "Req Commands"
-                do! SendCapabilitiesCommandsAsyns irc_writer
+                match irc_writer with
+                | Some ircWriter ->
+                    printfn "Req Commands"
+                    do! SendCapabilitiesCommandsAsyns ircWriter
+                | None ->printfn "Skip Req Commands"
 
                 return! messageLoop()
             }
@@ -115,8 +126,12 @@ type MailboxSender () =
 
         printColored colorPing "PONG"
         let irc_writer = Connection.GetWriterInstance()
-        SendPong irc_writer
-
+        
+        match irc_writer with
+        | Some ircWriter ->
+            SendPong ircWriter
+        | None ->printfn "Skip Pong"        
+        
     /// Post Login.
     static let postLogin(oauth:string)(username:string) = agent.PostAndReply(fun replyChannel -> 
         cmdEnqueue()
