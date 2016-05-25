@@ -83,19 +83,22 @@ let main argv =
     /// Add to log settings. TODO: kind of ugly.
     MailboxLogger.SettingsChannel.Add channel logFile
 
-    let irc_reader = Connection.GetReaderInstance()
-
     // Login and join.
     MailboxSender.PostAndReplyLogin oauth nick |> ignore // must wait for result.
     MailboxSender.PostAndReplyJoin channel |> ignore // must wait for result.
     
     // TODO: from cli
     MailboxSender.PostReqCapabilities()
-    MailboxSender.PostReqCommands()
-
-    // Read untill end.
-    while not irc_reader.EndOfStream do
-        processOneLine irc_reader logFile
+    MailboxSender.PostReqCommands()    
     
+    let irc_reader = Connection.GetReaderInstance()
+
+    if irc_reader.IsSome then
+        // Read untill end.
+        while not irc_reader.Value.EndOfStream do
+            processOneLine irc_reader.Value logFile
+    else
+        printfn "Connection failed."
+
     printfn "Done"
     0 // return an integer exit code

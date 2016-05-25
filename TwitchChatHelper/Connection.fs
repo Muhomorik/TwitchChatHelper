@@ -12,35 +12,50 @@ let port  = 6667
 
 /// TcpClient initialization.
 let private conn = Lazy.Create(fun() -> 
-    printfn "CONNECT"
-    let irc_client = new TcpClient()
-    irc_client.Connect(server, port)
-    irc_client)
+    try
+        printfn "CONNECT"
+        let irc_client = new TcpClient()
+        irc_client.Connect(server, port)
+        Some(irc_client)
+    with
+        | :? SocketException as ex -> 
+            printfn "Got SocketException. No connection. Skip everything."
+            None
+        | _ as ex->                 
+            // don't handle any other cases
+            printfn "%s" ex.Message 
+            reraise()
+    )
 
 /// TcpClient instance. 
 let GetConnInstance() = 
-    let currConn = conn.Value
-    match currConn.Connected with
-    | true -> 
-        currConn
-    | false ->
-        printfn "RECONNECT"
-        currConn.Connect(server, port)
-        currConn
+    let currConn = conn.Value |> Option.map (fun currConn ->
+        match currConn.Connected with
+        | true -> 
+            currConn
+        | false ->
+            printfn "RECONNECT"
+            currConn.Connect(server, port)
+            currConn
+    )
+    currConn
 
 /// StreamReader initialization.
 let private ircReader = Lazy.Create(fun() -> 
-    let conn = GetConnInstance()
-    let sr = new StreamReader( conn.GetStream() )
-    sr)
+    let conn = GetConnInstance() |> Option.map (fun conn ->
+        let sr = new StreamReader( conn.GetStream() )
+        sr)
+    conn
+    )
 
 /// StreamReader instance. 
 let GetReaderInstance() = ircReader.Value
 
+// TODO: as option.
 /// StreamWriter initialization.
 let private ircWriter = Lazy.Create(fun() -> 
     let conn = GetConnInstance()
-    let sr = new StreamWriter( conn.GetStream() )
+    let sr = new StreamWriter( conn.Value.GetStream() )
     sr.AutoFlush <- true
     sr)
 
