@@ -27,7 +27,7 @@ let printStats() =
         lastStamp <- lastStamp + 1
 
 /// Process one read from input stream.
-let processOneLine (ircReader:StreamReader)(logFile :string) = 
+let processOneLine (ircReader:StreamReader) = 
     try    
         let msg_string = ircReader.ReadLine()
     
@@ -82,21 +82,22 @@ let main argv =
 
     /// Add to log settings. TODO: kind of ugly.
     MailboxLogger.SettingsChannel.Add channel logFile
-
-    // Login and join.
-    MailboxSender.PostAndReplyLogin oauth nick |> ignore // must wait for result.
-    MailboxSender.PostAndReplyJoin channel |> ignore // must wait for result.
     
     // TODO: from cli
     MailboxSender.PostReqCapabilities()
-    MailboxSender.PostReqCommands()    
+    MailboxSender.PostReqCommands() 
+    
+    // Login and join.
+    MailboxSender.PostAndReplyLogin oauth nick |> ignore // must wait for result.
+    MailboxSender.PostAndReplyJoin channel |> ignore // must wait for result.
+   
     
     let irc_reader = Connection.GetReaderInstance()
 
     if irc_reader.IsSome then
         // Read untill end.
         while not irc_reader.Value.EndOfStream do
-            processOneLine irc_reader.Value logFile
+            processOneLine irc_reader.Value
     else
         printfn "Connection failed."
 

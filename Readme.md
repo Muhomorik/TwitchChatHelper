@@ -38,6 +38,10 @@ There are two main F# MailboxProcessor agents here. Lightweight mailboxes, runs 
 - **ReaderMailbox**. Write handlers here. Handles received messages and Posts replies back via WriterMailbox.
 - **WriterMailbox**. Send replies back to twitch. Output rate is limited according to the limits.
 
+## Features ##
+
+- Handles disconnects and no connecion errors (doesn't crash anymore ;))
+
 # Screenshots #
 
 Login
