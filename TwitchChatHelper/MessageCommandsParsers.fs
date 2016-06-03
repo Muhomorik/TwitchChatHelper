@@ -56,7 +56,7 @@ let (|PatternCommandsNotice|_|) (cmd: string) =
 /// Pattern for command Host starts message:.
 /// :tmi.twitch.tv HOSTTARGET #hosting_channel :target_channel [number].
 [<Literal>]
-let pattern_CommandsHostTargetStart =  @"^:(?<twitchGroup>[\w\.]+)\s+HOSTTARGET\s+" + pattern_channel + "\s+:" + pattern_channel2 + "\s(?<number>\d+)$"
+let pattern_CommandsHostTargetStart =  @"^:(?<twitchGroup>[\w\.]+)\s+HOSTTARGET\s+" + pattern_channel + "\s+:" + pattern_twitchUsername + "\s(?<number>\d+)$"
 // ^:(?<twitchGroup>[\w\.]+)\s+HOSTTARGET\s+(?<channel>#[\w]{2,24})\s+:(?<channel1>#[\w]{2,24})\s(?<number>\d+)$
 
 /// Pattern for command Host starts message:.
@@ -67,7 +67,7 @@ let (|PatternCommandsHostTargetStart|_|) (cmd: string) =
         let p = CommandsHostTargetStart {
             TwitchGroup = m.Groups.["twitchGroup"].Value 
             ChannelHosting = m.Groups.["channel"].Value
-            ChannelTarget= m.Groups.["channel_2"].Value 
+            ChannelTarget= m.Groups.["nickname"].Value 
             Number = m.Groups.["number"].Value           
             }
         Some(p)

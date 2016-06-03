@@ -30,6 +30,8 @@ let``RecvCap: test commands ack``()=
     | _ -> true |> should equal false
 
 
+let msg_notice_slown_on = ":tmi.twitch.tv NOTICE #channel :This room is now in slow mode. You may send messages every 120 seconds."
+let msg_notice_slown_off = ":tmi.twitch.tv NOTICE #channel :This room is no longer in slow mode."
 
 let msg_notice1 = "@msg-id=slow_off :tmi.twitch.tv NOTICE #channel :This room is no longer in slow mode."
 //  TODO: other messages, find in log.
@@ -58,7 +60,7 @@ type ``Recv: test parse command notice`` () =
 
 [<Test>]
 let``RecvCap: test commands Hostarget start``()=
-    let msg = ":tmi.twitch.tv HOSTTARGET #hosting_channel :#target_channel 100" 
+    let msg = ":tmi.twitch.tv HOSTTARGET #hosting_channel :target_channel 285" 
     // TODO: start number i prel. no real data.
     // TODO: check hasthag for target channel.
     let cmd = parseMessage msg
@@ -67,8 +69,8 @@ let``RecvCap: test commands Hostarget start``()=
     | CommandsHostTargetStart a  -> 
         a.TwitchGroup |> should equal "tmi.twitch.tv"       
         a.ChannelHosting |> should equal "#hosting_channel"       
-        a.ChannelTarget |> should equal "#target_channel"       
-        a.Number |> should equal "100"       
+        a.ChannelTarget |> should equal "target_channel"       
+        a.Number |> should equal "285"       
     | _ -> true |> should equal false
 
 [<Test>]
