@@ -27,6 +27,8 @@ let pattern_channel =  @"(?<channel>#[\w]{2,24})"
 [<Literal>]
 let pattern_channel2 =  @"(?<channel_2>#[\w]{2,24})"
 
+// TODO: general pattern fror message and twitch group.s
+
 /// RegEx for successful connection message.
 [<Literal>]
 let pattern_successfulConnection =  @"^:(?<twitchGroup>[\w\.]+)\s+(?<code>\d+)\s+" + pattern_twitchUsername + "\s+:(?<message>.*)$"
@@ -166,7 +168,7 @@ let (|PatternChannelMessage|_|) (cmd: string) =
         let nickname2 = m.Groups.["nickname2"].Value
         if nickname <> nickname2 then printfn "NICKNAMES NOT EQUAL: %s, %s" nickname nickname2
          
-        let p = ChanellMessage {
+        let p = ChanellMessageRx {
             NicknameAlterative = m.Groups.["nicknameAlt"].Value
             Nickname = m.Groups.["nickname"].Value
             Channel = m.Groups.["channel"].Value

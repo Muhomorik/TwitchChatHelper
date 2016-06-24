@@ -25,7 +25,7 @@ type MessageCommandNotice = {
     MsgId :MsgId
     TwitchGroup :string
     Channel:string 
-    Message :string}
+    Message :string}  // TODO: add time in seconds as int to type, slow_on.
 
 /// Host starts message.
 /// :tmi.twitch.tv HOSTTARGET #hosting_channel :target_channel [number]

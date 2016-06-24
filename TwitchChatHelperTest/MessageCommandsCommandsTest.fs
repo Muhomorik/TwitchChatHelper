@@ -31,32 +31,65 @@ let``RecvCap: test commands ack``()=
 
 
 let msg_notice_slown_on = ":tmi.twitch.tv NOTICE #channel :This room is now in slow mode. You may send messages every 120 seconds."
+
+[<Test>]
+let``RecvCap: test commands NOTICE slown_on``()=
+    let msg = msg_notice_slown_on 
+    let cmd = parseMessage msg
+
+    match cmd with
+    | CommandsNotice a  -> 
+        a.MsgId |> should equal MsgId.SlowOn       
+        a.TwitchGroup |> should equal "tmi.twitch.tv"       
+        a.Channel |> should equal "#channel"       
+        a.Message |> should equal "This room is now in slow mode. You may send messages every 120 seconds."       
+    | _ -> true |> should equal false
+
 let msg_notice_slown_off = ":tmi.twitch.tv NOTICE #channel :This room is no longer in slow mode."
 
-let msg_notice1 = "@msg-id=slow_off :tmi.twitch.tv NOTICE #channel :This room is no longer in slow mode."
-//  TODO: other messages, find in log.
-[<TestFixture>]
-type ``Recv: test parse command notice`` () = 
-    static member TestData =
-        [|
-            [|msg_notice1, "slow_off", "tmi.twitch.tv" , "#channel", "This room is no longer in slow mode."|];
-        |]
+[<Test>]
+let``RecvCap: test commands NOTICE slown_off``()=
+    let msg = msg_notice_slown_off 
+    let cmd = parseMessage msg
 
-    [<TestCaseSource("TestData")>]
-    member x.``Recv: test parse command notice`` (testData:(string*string*string*string*string)) =
-        let cmd, msgId, twitchGroup, channel, message = testData
-        
-        let retv_msg = parseMessage cmd
+    match cmd with
+    | CommandsNotice a  -> 
+        a.MsgId |> should equal MsgId.SlowOff       
+        a.TwitchGroup |> should equal "tmi.twitch.tv"       
+        a.Channel |> should equal "#channel"       
+        a.Message |> should equal "This room is no longer in slow mode."       
+    | _ -> true |> should equal false
 
-        // TODO: change type.
-        match retv_msg with
-        | CommandsNotice m -> 
-            m.MsgId |> should equal MsgId.SlowOff
-            m.TwitchGroup |> should equal twitchGroup
-            m.Channel |> should equal channel
-            m.Message |> should equal message
-        | _ -> 
-            true |> should equal false
+
+// TODO: move to tags when tags done.
+
+//let msg_notice_slown_on = ":tmi.twitch.tv NOTICE #channel :This room is now in slow mode. You may send messages every 120 seconds."
+//let msg_notice_slown_off = ":tmi.twitch.tv NOTICE #channel :This room is no longer in slow mode."
+//
+//let msg_notice1 = "@msg-id=slow_off :tmi.twitch.tv NOTICE #channel :This room is no longer in slow mode."
+////  TODO: other messages, find in log.
+//[<TestFixture>]
+//type ``Recv: test parse command notice`` () = 
+//    static member TestData =
+//        [|
+//            [|msg_notice1, "slow_off", "tmi.twitch.tv" , "#channel", "This room is no longer in slow mode."|];
+//        |]
+//
+//    [<TestCaseSource("TestData")>]
+//    member x.``Recv: test parse command notice`` (testData:(string*string*string*string*string)) =
+//        let cmd, msgId, twitchGroup, channel, message = testData
+//        
+//        let retv_msg = parseMessage cmd
+//
+//        // TODO: change type.
+//        match retv_msg with
+//        | CommandsNotice m -> 
+//            m.MsgId |> should equal MsgId.SlowOff
+//            m.TwitchGroup |> should equal twitchGroup
+//            m.Channel |> should equal channel
+//            m.Message |> should equal message
+//        | _ -> 
+//            true |> should equal false
 
 [<Test>]
 let``RecvCap: test commands Hostarget start``()=

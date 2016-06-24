@@ -18,7 +18,7 @@ let (|PatternCommandsAck|_|) (cmd: string) =
         Some(p)
    | false -> None
 
-/// Parse mgg-id to enum
+/// TODO: parseMsgId belongs to tags parser. Parse mgg-id to enum.
 let parseMsgId (msgString :string) =
     match msgString with
     | "subs_on"     -> MsgId.SubsOn
@@ -31,26 +31,77 @@ let parseMsgId (msgString :string) =
     | "host_off"    -> MsgId.HostOff
     | _ -> failwith "Unknown MsgId"
 
-
+// TODO: move NOTICE to tags.
 /// Pattern for command NOTICE.
 /// @msg-id=slow_off :tmi.twitch.tv NOTICE #channel :This room is no longer in slow mode.
-[<Literal>]
-let pattern_CommandNotice =  @"^@msg-id=(?<msgid>(subs_on|subs_off|slow_on|slow_off|r9k_on|r9k_off|host_on|host_off))\s+:(?<twitchGroup>[\w\.]+)\s+NOTICE\s+" + pattern_channel + "\s+:(?<message>.*)$"
+//[<Literal>]
+//let pattern_CommandNoticeTags =  @"^@msg-id=(?<msgid>(subs_on|subs_off|slow_on|slow_off|r9k_on|r9k_off|host_on|host_off))\s+:(?<twitchGroup>[\w\.]+)\s+NOTICE\s+" + pattern_channel + "\s+:(?<message>.*)$"
 // ^@msg-id=(?<msgid>(subs_on|subs_off|slow_on|slow_off|r9k_on|r9k_off|host_on|host_off))\s+:(?<twitchGroup>[\w\.]+)\s+NOTICE\s+(?<channel>#[\w]{2,24})\s+:(?<message>.*)$
 
-/// Pattern for command NOTICE.
-let (|PatternCommandsNotice|_|) (cmd: string) =
-   let m = Regex.Match(cmd, pattern_CommandNotice, RegexOptions.Compiled) 
+/// TODO: Pattern for command NOTICE.
+//let (|PatternCommandsNoticeTags|_|) (cmd: string) =
+//   let m = Regex.Match(cmd, pattern_CommandNoticeTags, RegexOptions.Compiled) 
+//   match m.Success with
+//   | true -> 
+//        let p = CommandsNotice {
+//            MsgId = parseMsgId <| m.Groups.["msgid"].Value 
+//            TwitchGroup = m.Groups.["twitchGroup"].Value
+//            Channel= m.Groups.["channel"].Value 
+//            Message = m.Groups.["message"].Value           
+//            }
+//        Some(p)
+//   | false -> None
+
+
+
+[<Literal>]
+let pattern__notice_slown_on = ":(?<twitchGroup>[\w\.]+)\s+NOTICE " + pattern_channel + " :This room is now in slow mode. (?<message>.*)"
+
+/// Pattern for SlowOn message.
+let (|PatternCommandsNotice_slown_on|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern__notice_slown_on, RegexOptions.Compiled) 
    match m.Success with
    | true -> 
         let p = CommandsNotice {
-            MsgId = parseMsgId <| m.Groups.["msgid"].Value 
+            MsgId = MsgId.SlowOn 
             TwitchGroup = m.Groups.["twitchGroup"].Value
             Channel= m.Groups.["channel"].Value 
-            Message = m.Groups.["message"].Value           
+            // TODO: change message in slow_on when time parser is done.
+            Message = "This room is now in slow mode. " + m.Groups.["message"].Value           
             }
         Some(p)
    | false -> None
+
+[<Literal>]
+let pattern__notice_slown_off = ":(?<twitchGroup>[\w\.]+)\s+NOTICE " + pattern_channel + "\s+:This room is no longer in slow mode."
+
+/// Pattern for SlowOff message.
+let (|PatternCommandsNotice_slown_off|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern__notice_slown_off, RegexOptions.Compiled) 
+   match m.Success with
+   | true -> 
+        let p = CommandsNotice {
+            MsgId = MsgId.SlowOff 
+            TwitchGroup = m.Groups.["twitchGroup"].Value
+            Channel= m.Groups.["channel"].Value
+            // No message parsed because pattern is rightn now identical too slow_on. 
+            // Change it after the slow_oon time is parsed. 
+            Message = "This room is no longer in slow mode."          
+            }
+        Some(p)
+   | false -> None
+
+/// Collecion of NOTICE patterns that are matched after each other.
+let (|PatternCommandsNotice|_|) (cmd: string) =
+    match cmd with
+    // often used commands.
+    | PatternCommandsNotice_slown_on a -> Some(a)
+    | PatternCommandsNotice_slown_off a -> Some(a)
+    | _ -> None   
+
+
+
+
 
 
 /// Pattern for command Host starts message:.
