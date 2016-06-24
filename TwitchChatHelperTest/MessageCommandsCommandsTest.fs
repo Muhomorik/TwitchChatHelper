@@ -60,6 +60,35 @@ let``RecvCap: test commands NOTICE slown_off``()=
         a.Message |> should equal "This room is no longer in slow mode."       
     | _ -> true |> should equal false
 
+let msg_notice_subs_on = ":tmi.twitch.tv NOTICE #channel :This room is now in subscribers-only mode."
+
+[<Test>]
+let``RecvCap: test commands NOTICE subs_on``()=
+    let msg = msg_notice_subs_on 
+    let cmd = parseMessage msg
+
+    match cmd with
+    | CommandsNotice a  -> 
+        a.MsgId |> should equal MsgId.SubsOn       
+        a.TwitchGroup |> should equal "tmi.twitch.tv"       
+        a.Channel |> should equal "#channel"       
+        a.Message |> should equal "This room is now in subscribers-only mode."       
+    | _ -> true |> should equal false
+
+let msg_notice_subs_off = ":tmi.twitch.tv NOTICE #channel :This room is no longer in subscribers-only mode."
+
+[<Test>]
+let``RecvCap: test commands NOTICE subs_off``()=
+    let msg = msg_notice_subs_off 
+    let cmd = parseMessage msg
+
+    match cmd with
+    | CommandsNotice a  -> 
+        a.MsgId |> should equal MsgId.SubsOff       
+        a.TwitchGroup |> should equal "tmi.twitch.tv"       
+        a.Channel |> should equal "#channel"       
+        a.Message |> should equal "This room is no longer in subscribers-only mode."       
+    | _ -> true |> should equal false
 
 // TODO: move to tags when tags done.
 

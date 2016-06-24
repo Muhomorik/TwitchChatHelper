@@ -91,12 +91,52 @@ let (|PatternCommandsNotice_slown_off|_|) (cmd: string) =
         Some(p)
    | false -> None
 
+/// Subscribers only mode ON.
+[<Literal>]
+let pattern__notice_subs_on = ":(?<twitchGroup>[\w\.]+)\s+NOTICE " + pattern_channel + "\s+:This room is now in subscribers-only mode."
+
+/// Pattern for SubsOn message.
+let (|PatternCommandsNotice_subs_on|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern__notice_subs_on, RegexOptions.Compiled) 
+   match m.Success with
+   | true -> 
+        let p = CommandsNotice {
+            MsgId = MsgId.SubsOn 
+            TwitchGroup = m.Groups.["twitchGroup"].Value
+            Channel= m.Groups.["channel"].Value
+            // No message parsed because pattern is rightn now identical to on. 
+            Message = "This room is now in subscribers-only mode."          
+            }
+        Some(p)
+   | false -> None
+
+/// Subscribers only mode ON.
+[<Literal>]
+let pattern__notice_subs_off = ":(?<twitchGroup>[\w\.]+)\s+NOTICE " + pattern_channel + "\s+:This room is no longer in subscribers-only mode."
+
+/// Pattern for SubsOff message.
+let (|PatternCommandsNotice_subs_off|_|) (cmd: string) =
+   let m = Regex.Match(cmd, pattern__notice_subs_off, RegexOptions.Compiled) 
+   match m.Success with
+   | true -> 
+        let p = CommandsNotice {
+            MsgId = MsgId.SubsOff 
+            TwitchGroup = m.Groups.["twitchGroup"].Value
+            Channel= m.Groups.["channel"].Value
+            // No message parsed because pattern is rightn now identical to on. 
+            Message = "This room is no longer in subscribers-only mode."          
+            }
+        Some(p)
+   | false -> None
+
 /// Collecion of NOTICE patterns that are matched after each other.
 let (|PatternCommandsNotice|_|) (cmd: string) =
     match cmd with
     // often used commands.
     | PatternCommandsNotice_slown_on a -> Some(a)
     | PatternCommandsNotice_slown_off a -> Some(a)
+    | PatternCommandsNotice_subs_on a -> Some(a)
+    | PatternCommandsNotice_subs_off a -> Some(a)
     | _ -> None   
 
 
